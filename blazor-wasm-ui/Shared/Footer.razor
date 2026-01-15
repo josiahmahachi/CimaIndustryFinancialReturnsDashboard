@@ -1,0 +1,32 @@
+@* Footer component - copyright and links *@
+
+<footer>
+    <div class="footer-content">
+        <p class="footer-copyright">© 2025 Financial Authority. All rights reserved.</p>
+        <div class="footer-links">
+            <button class="footer-link" @onclick="HandleHelpSupport">Help & Support</button>
+            <button class="footer-link" @onclick="HandlePrivacyPolicy">Privacy Policy</button>
+            <button class="footer-link" @onclick="HandleTermsOfService">Terms of Service</button>
+        </div>
+    </div>
+</footer>
+
+@code {
+    private void HandleHelpSupport()
+    {
+        // TODO: Navigate to help & support page
+        Console.WriteLine("Help & Support clicked");
+    }
+
+    private void HandlePrivacyPolicy()
+    {
+        // TODO: Navigate to privacy policy page
+        Console.WriteLine("Privacy Policy clicked");
+    }
+
+    private void HandleTermsOfService()
+    {
+        // TODO: Navigate to terms of service page
+        Console.WriteLine("Terms of Service clicked");
+    }
+}

@@ -9,7 +9,7 @@
                 <span>Dashboard</span>
             }
         </div>
-        <button class="sidebar-toggle" @onclick="OnToggleCollapse" aria-label="Toggle sidebar">
+        <button class="sidebar-toggle" @onclick="@(async () => await OnToggleCollapse.InvokeAsync())" aria-label="Toggle sidebar">
             ☰
         </button>
     </div>

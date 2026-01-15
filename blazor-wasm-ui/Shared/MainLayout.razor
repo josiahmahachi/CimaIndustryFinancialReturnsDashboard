@@ -1,0 +1,56 @@
+@inherits LayoutComponentBase
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar-container @(IsSidebarCollapsed ? "collapsed" : "expanded")">
+        <Sidebar 
+            ActiveItem="@ActiveMenuItem" 
+            IsCollapsed="@IsSidebarCollapsed"
+            OnToggleCollapse="@OnToggleSidebarCollapse"
+            OnItemClick="@OnSidebarItemClick" />
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-content @(IsSidebarCollapsed ? "sidebar-collapsed" : "")">
+        <!-- Header -->
+        <Header Title="@CurrentPageTitle" />
+
+        <!-- Page Body -->
+        <main>
+            @Body
+        </main>
+
+        <!-- Footer -->
+        <Footer />
+    </div>
+</div>
+
+@code {
+    // Sidebar collapse state
+    private bool IsSidebarCollapsed = false;
+
+    // Active menu item
+    private string ActiveMenuItem = "filings";
+
+    // Current page title
+    private string CurrentPageTitle = "Financial Returns Dashboard";
+
+    /// <summary>
+    /// Toggle sidebar collapse state
+    /// </summary>
+    private void OnToggleSidebarCollapse()
+    {
+        IsSidebarCollapsed = !IsSidebarCollapsed;
+    }
+
+    /// <summary>
+    /// Handle sidebar menu item click
+    /// </summary>
+    private Task OnSidebarItemClick(string itemName)
+    {
+        ActiveMenuItem = itemName;
+        // TODO: Implement navigation based on itemName
+        Console.WriteLine($"Menu item clicked: {itemName}");
+        return Task.CompletedTask;
+    }
+}
