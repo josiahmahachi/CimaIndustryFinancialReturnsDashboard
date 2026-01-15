@@ -1,0 +1,15 @@
+{
+  "name": "blazor-wasm-ui-styling",
+  "version": "1.0.0",
+  "description": "Tailwind CSS build pipeline for Blazor WASM Financial Returns Dashboard",
+  "private": true,
+  "scripts": {
+    "css:build": "tailwindcss -i ./src/styles/tailwind.css -o ./blazor-wasm-ui/wwwroot/css/tailwind.css",
+    "css:watch": "tailwindcss -i ./src/styles/tailwind.css -o ./blazor-wasm-ui/wwwroot/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1",
+    "postcss": "^8.4.32",
+    "autoprefixer": "^10.4.16"
+  }
+}

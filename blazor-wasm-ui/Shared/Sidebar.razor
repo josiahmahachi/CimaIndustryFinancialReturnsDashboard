@@ -1,68 +1,139 @@
-@* Sidebar navigation component - placeholder matching React Sidebar props *@
+@* Sidebar navigation component - aligns with React Sidebar.tsx implementation *@
 
-<div class="sidebar-wrapper">
-    <!-- Sidebar header with collapse toggle -->
-    <div class="sidebar-header">
-        <div class="sidebar-title">
-            @if (!IsCollapsed)
-            {
-                <span>Dashboard</span>
-            }
+<nav class="@(IsCollapsed ? "w-16" : "w-64") bg-white border-r border-neutral-200 h-screen fixed left-0 top-0 transition-all duration-300 ease-in-out">
+    <!-- Logo/Header -->
+    <div class="@(IsCollapsed ? "px-4" : "px-6") py-4 border-b border-neutral-200 relative">
+        <div class="flex items-center">
+            <div class="flex items-center space-x-3">
+                <span class="w-5 h-5 text-neutral-900 flex-shrink-0">@RenderIcon("Building2", false)</span>
+                @if (!IsCollapsed)
+                {
+                    <span class="text-lg text-neutral-900">Financial Authority</span>
+                }
+            </div>
+            <button
+                @onclick="@(async () => await OnToggleCollapse.InvokeAsync())"
+                class="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 rounded-md hover:bg-neutral-100 transition-colors"
+                aria-label="@(IsCollapsed ? "Expand sidebar" : "Collapse sidebar")"
+            >
+                @if (IsCollapsed)
+                {
+                    @RenderIcon("ChevronRight")
+                }
+                else
+                {
+                    @RenderIcon("ChevronLeft")
+                }
+            </button>
         </div>
-        <button class="sidebar-toggle" @onclick="@(async () => await OnToggleCollapse.InvokeAsync())" aria-label="Toggle sidebar">
-            ☰
-        </button>
     </div>
 
-    <!-- Sidebar menu items -->
-    <nav class="sidebar-nav">
-        <div class="menu-item @(ActiveItem == "filings" ? "active" : "")" 
-             @onclick="@(() => OnItemClick.InvokeAsync("filings"))">
-            <span class="menu-icon">📄</span>
-            @if (!IsCollapsed)
+    <!-- Navigation Menu -->
+    <div class="py-4">
+        <ul class="space-y-1">
+            @foreach (var item in MenuItems)
             {
-                <span class="menu-label">Filings</span>
+                var isActive = ActiveItem.ToLower() == item.Id;
+                <li>
+                    <button
+                        @onclick="@(async () => await OnItemClick.InvokeAsync(item.Id))"
+                        class="@GetMenuItemClass(isActive)"
+                        title="@(IsCollapsed ? item.Label : "")"
+                    >
+                        @if (!IsCollapsed)
+                        {
+                            @RenderIcon(item.IconName, true)
+                        }
+                        else
+                        {
+                            <span class="w-5 h-5 flex-shrink-0">@RenderIcon(item.IconName, false)</span>
+                        }
+                        @if (!IsCollapsed)
+                        {
+                            <span class="transition-opacity duration-200">@item.Label</span>
+                        }
+                        @if (IsCollapsed)
+                        {
+                            <div class="absolute left-full ml-2 px-2 py-1 bg-neutral-900 text-white text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
+                                @item.Label
+                            </div>
+                        }
+                    </button>
+                </li>
             }
-        </div>
-
-        <div class="menu-item @(ActiveItem == "requests" ? "active" : "")" 
-             @onclick="@(() => OnItemClick.InvokeAsync("requests"))">
-            <span class="menu-icon">📋</span>
-            @if (!IsCollapsed)
-            {
-                <span class="menu-label">Requests</span>
-            }
-        </div>
-
-        <div class="menu-item @(ActiveItem == "applications" ? "active" : "")" 
-             @onclick="@(() => OnItemClick.InvokeAsync("applications"))">
-            <span class="menu-icon">📝</span>
-            @if (!IsCollapsed)
-            {
-                <span class="menu-label">Applications</span>
-            }
-        </div>
-
-        <div class="menu-item @(ActiveItem == "reports" ? "active" : "")" 
-             @onclick="@(() => OnItemClick.InvokeAsync("reports"))">
-            <span class="menu-icon">📊</span>
-            @if (!IsCollapsed)
-            {
-                <span class="menu-label">Reports</span>
-            }
-        </div>
-    </nav>
-
-    <!-- Sidebar footer -->
-    <div class="sidebar-footer">
-        @if (!IsCollapsed)
-        {
-            <p class="sidebar-version">v1.0.0</p>
-        }
+        </ul>
     </div>
-</div>
+</nav>
 
 @code {
+    /// <summary>
+    /// Menu item data class
+    /// </summary>
+    private class MenuItem
+    {
+        public string IconName { get; set; }
+        public string Label { get; set; }
+        public string Id { get; set; }
+    }
+
+    /// <summary>
+    /// Menu items matching React version with lucide icon names
+    /// </summary>
+    private List<MenuItem> MenuItems = new()
+    {
+        new MenuItem { IconName = "Home", Label = "Home", Id = "home" },
+        new MenuItem { IconName = "FileText", Label = "Filings & Extensions", Id = "filings" },
+        new MenuItem { IconName = "Send", Label = "Requests", Id = "requests" },
+        new MenuItem { IconName = "ClipboardList", Label = "Applications", Id = "applications" },
+        new MenuItem { IconName = "Users", Label = "User Management", Id = "user-management" },
+        new MenuItem { IconName = "Settings", Label = "Settings", Id = "settings" },
+        new MenuItem { IconName = "Book", Label = "Documentation", Id = "documentation" },
+        new MenuItem { IconName = "LifeBuoy", Label = "Support", Id = "support" },
+    };
+
+    /// <summary>
+    /// Render lucide-style SVG icon based on icon name with proper styling
+    /// </summary>
+    private MarkupString RenderIcon(string iconName, bool isMenuIcon = true)
+    {
+        var iconSvg = iconName switch
+        {
+            "Home" => """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 4v4m0 0H9m3 0h3"></path></svg>""",
+            "FileText" => """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>""",
+            "Send" => """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9-7-9-7m0 0L3 5m9 7v7"></path></svg>""",
+            "ClipboardList" => """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>""",
+            "Users" => """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 8.048M12 4.354L8.646 7.708m6.708 0L12 4.354m0 0L15.354 7.708m0 0a4 4 0 110-8.048M6 21h12a2 2 0 002-2V7a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>""",
+            "Settings" => """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>""",
+            "Book" => """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17.5v3.75a.75.75 0 00.75.75h18.5a.75.75 0 00.75-.75v-3.75c0-6.502-4.5-11.247-10-11.247z"></path></svg>""",
+            "LifeBuoy" => """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.14 3.14a8 8 0 010 11.314l3.14 3.14A9.965 9.965 0 0121 12a9.965 9.965 0 01-2.636-6.364M9.172 9.172L5.757 5.757m3.415 3.415a4 4 0 010 5.656m0 0L5.757 18.243m3.415-3.415l3.414 3.414"></path></svg>""",
+            "Building2" => """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h10a2 2 0 012 2v14a2 2 0 01-2 2z"></path></svg>""",
+            "ChevronLeft" => """<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>""",
+            "ChevronRight" => """<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>""",
+            _ => """<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>"""
+        };
+        
+        var wrapper = isMenuIcon 
+            ? $"""<span class="w-5 h-5 mr-3 flex-shrink-0">{iconSvg}</span>"""
+            : iconSvg;
+            
+        return new MarkupString(wrapper);
+    }
+
+    /// <summary>
+    /// Generate CSS class for menu item
+    /// </summary>
+    private string GetMenuItemClass(bool isActive)
+    {
+        var baseClass = "w-full flex items-center ";
+        var paddingClass = IsCollapsed ? "px-4 justify-center " : "px-6 ";
+        var stateClass = "py-3 text-sm cursor-pointer transition-colors group relative ";
+        var colorClass = isActive
+            ? "text-white bg-neutral-900 border-r-2 border-neutral-900"
+            : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900";
+
+        return baseClass + paddingClass + stateClass + colorClass;
+    }
+
     /// <summary>
     /// The currently active menu item
     /// </summary>

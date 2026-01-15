@@ -1,0 +1,79 @@
+@* Help Section - Help Panel Component *@
+
+<section class="help-section">
+    <div class="help-container">
+        <h2 class="help-title">Need Help?</h2>
+        <p class="help-description">
+            Use the filters above to search for your filings and manage filing extensions. 
+            For more information or support, contact our help desk.
+        </p>
+        <div class="help-content">
+            <div class="help-item">
+                <h3>Filing Deadlines</h3>
+                <p>View your upcoming filing deadlines in the Active Filings tab. The Due Date column shows when your returns are due.</p>
+            </div>
+            <div class="help-item">
+                <h3>Extensions</h3>
+                <p>You can request filing extensions from the Actions column. Note that some funds may have limitations on the number or duration of extensions available.</p>
+            </div>
+            <div class="help-item">
+                <h3>Filing Status</h3>
+                <p>The Status column indicates the current state of your filing. Common statuses include Available (ready to file), Processed (successfully filed), and Returned (requires amendments).</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .help-section {
+        background: #f0f9ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .help-container {
+        max-width: 1200px;
+    }
+
+    .help-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #0c4a6e;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .help-description {
+        color: #0c4a6e;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+
+    .help-content {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    .help-item {
+        background: white;
+        padding: 1rem;
+        border-radius: 0.375rem;
+        border-left: 3px solid #0284c7;
+    }
+
+    .help-item h3 {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #0c4a6e;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .help-item p {
+        font-size: 0.85rem;
+        color: #475569;
+        margin: 0;
+        line-height: 1.4;
+    }
+</style>

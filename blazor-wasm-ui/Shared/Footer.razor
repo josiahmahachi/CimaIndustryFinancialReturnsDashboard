@@ -1,12 +1,12 @@
 @* Footer component - copyright and links *@
 
-<footer>
-    <div class="footer-content">
-        <p class="footer-copyright">© 2025 Financial Authority. All rights reserved.</p>
-        <div class="footer-links">
-            <button class="footer-link" @onclick="HandleHelpSupport">Help & Support</button>
-            <button class="footer-link" @onclick="HandlePrivacyPolicy">Privacy Policy</button>
-            <button class="footer-link" @onclick="HandleTermsOfService">Terms of Service</button>
+<footer class="bg-white border-t border-neutral-200 px-6 py-6 mt-8">
+    <div class="flex justify-between items-center flex-wrap gap-4 max-w-full">
+        <p class="text-sm text-neutral-600 m-0">© 2025 Financial Authority. All rights reserved.</p>
+        <div class="flex gap-6">
+            <button class="bg-none border-none text-sky-600 text-sm cursor-pointer transition-colors hover:text-sky-700 hover:underline p-0" @onclick="HandleHelpSupport">Help & Support</button>
+            <button class="bg-none border-none text-sky-600 text-sm cursor-pointer transition-colors hover:text-sky-700 hover:underline p-0" @onclick="HandlePrivacyPolicy">Privacy Policy</button>
+            <button class="bg-none border-none text-sky-600 text-sm cursor-pointer transition-colors hover:text-sky-700 hover:underline p-0" @onclick="HandleTermsOfService">Terms of Service</button>
         </div>
     </div>
 </footer>

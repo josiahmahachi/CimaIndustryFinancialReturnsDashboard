@@ -14,6 +14,68 @@ Converting a feature-rich React financial dashboard (24 business components, 46 
 
 ---
 
+## Styling & CSS Architecture Guidelines
+
+### Completed: Tailwind CSS Buildout (January 15, 2026)
+
+The styling layer has been modernized to use **Tailwind CSS** with the following setup:
+
+#### Build Pipeline
+- **Tool:** Tailwind CLI with PostCSS
+- **Configuration:** `tailwind.config.js` (root) + `postcss.config.js`
+- **Build Scripts:** 
+  - `npm run css:build` - Single build
+  - `npm run css:watch` - Watch mode during development
+- **Output:** `blazor-wasm-ui/wwwroot/css/tailwind.css` (auto-generated)
+- **Load Order in index.html:**
+  1. Tailwind CSS (generated, utilities only)
+  2. Application CSS (app.css, non-Tailwind utilities)
+
+#### Design Tokens
+All color tokens, typography, spacing, and shadows match **react-figma-ui**:
+- **Colors:** Neutral grays (50-900), semantic status colors (green, red, yellow, blue, purple)
+- **Typography:** 12px→3xl scales, 400/500/600/700 font weights
+- **Spacing:** 4px increments (1, 2, 3, 4, 6, 8, 12, 16)
+- **Radius:** 0.375rem (sm), 0.5rem (default), 0.625rem (lg)
+
+### Styling Standards (Rule 1–3)
+
+**Rule 1: No `<style>` Blocks in `.razor` Files**
+- All component styling must use Tailwind utility classes
+- Exception: See Rule 2 for non-Tailwind patterns
+- Violators are violations of visual parity contract with React app
+
+**Rule 2: Prefer Tailwind Utilities; Use Global CSS Only for:**
+- Layout scaffolding (sidebar, header, footer transitions)
+- Reusable patterns not worth converting to utilities (badge colors, status badges)
+- Third-party CSS overrides
+- Styles requiring non-Tailwind properties (z-index management, column widths)
+- Reference: `blazor-wasm-ui/wwwroot/css/app.css` (organized by section)
+
+**Rule 3: Single Generated Tailwind CSS Output**
+- Do NOT create multiple Tailwind files
+- Do NOT import Tailwind CSS multiple times
+- All Tailwind output flows through `wwwroot/css/tailwind.css`
+- Regenerate after changes: `npm run css:build`
+
+### Files Migrated (January 2026)
+| File | Status | Migration Notes |
+|------|--------|-----------------|
+| `Shared/TopNavigation.razor` | ✅ DONE | Removed 31 lines of CSS; converted to Tailwind flexbox/border utilities |
+| `Shared/Footer.razor` | ✅ DONE | Removed 28 lines of CSS; flex layout + Tailwind text/color utilities |
+| `Shared/FiltersSection.razor` | ✅ DONE | Removed 120 lines of CSS; grid layout + input/button utilities |
+| `Shared/ReturnsTable.razor` | ✅ DONE | Removed 250+ lines of CSS; table utilities + badge colors → app.css |
+| `Pages/Filings.razor` | ✅ DONE | Removed 48 lines of CSS; container/typography utilities |
+| `Pages/Dashboard.razor` | ⚠️ DEPRECATED | Marked obsolete; Filings.razor is active |
+
+### Future Implementation Notes
+- When adding new components, **always use Tailwind first**
+- Check `app.css` before duplicating badge or button styles
+- Color palette is frozen per React design (see tailwind.config.js extend.colors)
+- For component-specific complexity, create local utility classes in app.css (not inline styles)
+
+---
+
 ## Key Findings & Assumption Corrections
 
 ### Incorrect Assumptions from Draft Plan

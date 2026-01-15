@@ -1,0 +1,233 @@
+@* Returns Table - Data Grid with Pagination *@
+@using blazor_wasm_ui.Models
+
+<section class="bg-white border border-neutral-200 rounded overflow-hidden mb-8 shadow-sm">
+    <table class="w-full border-collapse text-sm">
+        <thead>
+            <tr>
+                <th class="col-filing-id px-3 py-3 text-left font-semibold text-neutral-700 bg-neutral-50 border-b-2 border-neutral-200">Filing ID</th>
+                <th class="col-entity px-3 py-3 text-left font-semibold text-neutral-700 bg-neutral-50 border-b-2 border-neutral-200">Entity Details</th>
+                <th class="col-period px-3 py-3 text-left font-semibold text-neutral-700 bg-neutral-50 border-b-2 border-neutral-200">Period</th>
+                <th class="col-due-date px-3 py-3 text-left font-semibold text-neutral-700 bg-neutral-50 border-b-2 border-neutral-200">Due Date</th>
+                <th class="col-status px-3 py-3 text-left font-semibold text-neutral-700 bg-neutral-50 border-b-2 border-neutral-200">Status</th>
+                <th class="col-extensions px-3 py-3 text-left font-semibold text-neutral-700 bg-neutral-50 border-b-2 border-neutral-200">Extensions</th>
+                <th class="col-ext-status px-3 py-3 text-left font-semibold text-neutral-700 bg-neutral-50 border-b-2 border-neutral-200">Extension Status</th>
+                <th class="col-actions px-3 py-3 text-left font-semibold text-neutral-700 bg-neutral-50 border-b-2 border-neutral-200">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Returns != null && Returns.Count > 0)
+            {
+                @foreach (var ret in Returns)
+                {
+                    <tr class="hover:bg-neutral-50">
+                        <td class="col-filing-id px-3 py-3 border-b border-neutral-200 text-neutral-700">
+                            <span class="font-semibold text-neutral-900">@ret.Id</span>
+                        </td>
+                        <td class="col-entity px-3 py-3 border-b border-neutral-200 text-neutral-700">
+                            <div class="flex flex-col gap-1">
+                                <div class="font-medium text-neutral-900">@ret.FundName</div>
+                                <div class="text-xs text-neutral-600">Entity ID: @ret.EntityId</div>
+                            </div>
+                        </td>
+                        <td class="col-period px-3 py-3 border-b border-neutral-200 text-neutral-700">
+                            <div class="flex flex-col gap-1">
+                                <div class="font-medium text-neutral-900">@ret.Period</div>
+                                <div class="text-xs text-neutral-600">@ret.PeriodDescription</div>
+                            </div>
+                        </td>
+                        <td class="col-due-date px-3 py-3 border-b border-neutral-200 text-neutral-700">
+                            <div class="flex flex-col gap-1">
+                                <div class="font-medium text-neutral-900">@ret.DueDate</div>
+                                <div class="text-xs text-neutral-600">@ret.DueDateDescription</div>
+                            </div>
+                        </td>
+                        <td class="col-status px-3 py-3 border-b border-neutral-200 text-neutral-700">
+                            <span class="@GetStatusBadgeClass(ret.Status)">
+                                @ret.Status
+                            </span>
+                        </td>
+                        <td class="col-extensions px-3 py-3 border-b border-neutral-200 text-neutral-700">
+                            <div class="flex flex-col gap-1">
+                                <div class="font-medium text-neutral-900">@ret.ExtensionsUsed / @ret.MaxExtensions</div>
+                                <div class="text-xs text-neutral-600">@ret.ExtensionDescription</div>
+                            </div>
+                        </td>
+                        <td class="col-ext-status px-3 py-3 border-b border-neutral-200 text-neutral-700">
+                            @if (ret.PendingRequestType.HasValue && ret.PendingRequestStatus == PendingRequestStatus.Pending)
+                            {
+                                <span class="pending-badge">
+                                    @(ret.PendingRequestType.Value == PendingRequestType.Extension ? "Extension" :
+                                      ret.PendingRequestType.Value == PendingRequestType.Waiver ? "Waiver" : "Deferral")
+                                    - Pending
+                                </span>
+                            }
+                            else if (!ret.CanRequestExtension)
+                            {
+                                <span class="no-extensions-badge">No Extensions</span>
+                            }
+                            else
+                            {
+                                <span class="available-badge">Available</span>
+                            }
+                        </td>
+                        <td class="col-actions px-3 py-3 border-b border-neutral-200">
+                            <div class="flex flex-col gap-1">
+                                @if (ret.PendingRequestType.HasValue && ret.PendingRequestStatus == PendingRequestStatus.Pending)
+                                {
+                                    <button class="btn btn-secondary" @onclick="@(() => OnFileReturn.InvokeAsync(ret.Id))">
+                                        File Return
+                                    </button>
+                                    <button class="btn btn-secondary" @onclick="@(() => OnViewExtension.InvokeAsync(ret.Id))">
+                                        View @(ret.PendingRequestType.Value == PendingRequestType.Extension ? "Extension" : 
+                                                ret.PendingRequestType.Value == PendingRequestType.Waiver ? "Waiver" : "Deferral")
+                                    </button>
+                                }
+                                else if (ret.Status == ReturnStatus.Processed)
+                                {
+                                    <button class="btn btn-secondary" @onclick="@(() => OnViewReturn.InvokeAsync(ret.Id))">
+                                        View Return
+                                    </button>
+                                    @if (ret.ExtensionsUsed > 0)
+                                    {
+                                        <button class="btn btn-secondary" @onclick="@(() => OnViewExtension.InvokeAsync(ret.Id))">
+                                            View Extension
+                                        </button>
+                                    }
+                                }
+                                else if (!ret.CanRequestExtension)
+                                {
+                                    @if (ret.Status == ReturnStatus.Outstanding)
+                                    {
+                                        <button class="btn btn-danger" @onclick="@(() => OnRequestUnlock.InvokeAsync(ret.Id))">
+                                            Unlock
+                                        </button>
+                                        <button class="btn btn-primary" @onclick="@(() => OnRequestExtension.InvokeAsync(ret.Id))">
+                                            Ext/Waiver
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-success" @onclick="@(() => OnFileReturn.InvokeAsync(ret.Id))">
+                                            File Return
+                                        </button>
+                                    }
+                                }
+                                else
+                                {
+                                    @if (ret.Status == ReturnStatus.Outstanding)
+                                    {
+                                        <button class="btn btn-danger" @onclick="@(() => OnRequestUnlock.InvokeAsync(ret.Id))">
+                                            Unlock
+                                        </button>
+                                        <button class="btn btn-primary" @onclick="@(() => OnRequestExtension.InvokeAsync(ret.Id))">
+                                            Ext/Waiver
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-success" @onclick="@(() => OnFileReturn.InvokeAsync(ret.Id))">
+                                            File Return
+                                        </button>
+                                        <button class="btn btn-primary" @onclick="@(() => OnRequestExtension.InvokeAsync(ret.Id))">
+                                            Request Ext
+                                        </button>
+                                    }
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="8" class="px-8 py-8 text-center text-neutral-600">
+                        No filings found. Try adjusting your filters.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="flex justify-center items-center gap-2 px-6 py-6 border-t border-neutral-200 bg-neutral-50">
+        <button class="px-4 py-2 bg-white border border-neutral-300 rounded text-sm cursor-pointer transition-colors hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed" disabled="@(CurrentPage <= 1)" @onclick="@(() => OnPrevPage.InvokeAsync(null))">
+            ← Previous
+        </button>
+
+        <div class="flex gap-1">
+            @for (int i = 1; i <= TotalPages; i++)
+            {
+                var pageNum = i;
+                <button
+                    class="px-3 py-2 border border-neutral-300 rounded text-sm cursor-pointer transition-colors @(CurrentPage == pageNum ? "bg-neutral-900 text-white border-neutral-900" : "bg-white hover:bg-neutral-100")"
+                    @onclick="@(() => OnGoToPage.InvokeAsync(pageNum))">
+                    @pageNum
+                </button>
+            }
+        </div>
+
+        <button class="px-4 py-2 bg-white border border-neutral-300 rounded text-sm cursor-pointer transition-colors hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed" disabled="@(CurrentPage >= TotalPages)" @onclick="@(() => OnNextPage.InvokeAsync(null))">
+            Next →
+        </button>
+    </div>
+
+    <div class="px-6 py-3 bg-neutral-50 border-t border-neutral-200 text-sm text-neutral-600">
+        <p class="m-0">Showing @((CurrentPage - 1) * 12 + 1) to @Math.Min(CurrentPage * 12, TotalReturns) of @TotalReturns filings</p>
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public List<FinancialReturn> Returns { get; set; } = new();
+
+    [Parameter]
+    public int TotalReturns { get; set; }
+
+    [Parameter]
+    public int CurrentPage { get; set; } = 1;
+
+    [Parameter]
+    public int TotalPages { get; set; } = 1;
+
+    [Parameter]
+    public EventCallback OnNextPage { get; set; }
+
+    [Parameter]
+    public EventCallback OnPrevPage { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnGoToPage { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnRequestExtension { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnViewReturn { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnViewExtension { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnFileReturn { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnRequestUnlock { get; set; }
+
+    [Parameter]
+    public string ActiveTab { get; set; } = "active";
+
+    private string GetStatusBadgeClass(ReturnStatus status) => status switch
+    {
+        ReturnStatus.Available => "badge-available",
+        ReturnStatus.Prepared => "badge-prepared",
+        ReturnStatus.ReadyToSubmit => "badge-ready",
+        ReturnStatus.Processed => "badge-processed",
+        ReturnStatus.Returned => "badge-returned",
+        ReturnStatus.Waived => "badge-waived",
+        ReturnStatus.Outstanding => "badge-outstanding",
+        ReturnStatus.Deferred => "badge-deferred",
+        _ => "badge-default"
+    };
+}

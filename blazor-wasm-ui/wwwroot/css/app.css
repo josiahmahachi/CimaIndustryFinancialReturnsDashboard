@@ -1,4 +1,19 @@
-/* Layout & Typography */
+/**
+ * Global Application Styles
+ * Use only for styles that cannot be expressed with Tailwind utilities
+ * and reusable patterns.
+ * 
+ * This file includes:
+ * - Layout scaffolding (sidebar, main content, header)
+ * - Reusable component patterns
+ * - Third-party overrides
+ * - Tailwind-incompatible utilities (badge colors, table columns)
+ */
+
+/* ========================================
+   LAYOUT & TYPOGRAPHY
+   ======================================== */
+
 html, body {
     margin: 0;
     padding: 0;
@@ -121,7 +136,6 @@ h1:focus {
 /* Main Content Area */
 main {
     flex: 1;
-    padding: 2rem 1.5rem;
     overflow-y: auto;
 }
 
@@ -296,3 +310,267 @@ footer {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+/* ========================================
+   TAILWIND UTILITY CLASSES
+   Used when Tailwind doesn't provide exact matches
+   ======================================== */
+
+/* ReturnsTable: Column width definitions */
+.col-filing-id {
+  width: 80px;
+}
+
+.col-entity {
+  width: 180px;
+}
+
+.col-period {
+  width: 120px;
+}
+
+.col-due-date {
+  width: 140px;
+}
+
+.col-status {
+  width: 100px;
+}
+
+.col-extensions {
+  width: 150px;
+}
+
+.col-ext-status {
+  width: 130px;
+}
+
+.col-actions {
+  width: 180px;
+}
+
+/* ========================================
+   STATUS BADGE STYLES
+   Used in ReturnsTable for status indicators
+   ======================================== */
+
+.badge-available {
+  background-color: #d1fae5;
+  color: #065f46;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.badge-prepared {
+  background-color: #dbeafe;
+  color: #1e40af;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.badge-ready {
+  background-color: #ede9fe;
+  color: #5b21b6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.badge-processed {
+  background-color: #d1fae5;
+  color: #065f46;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.badge-returned {
+  background-color: #fee2e2;
+  color: #7f1d1d;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.badge-waived {
+  background-color: #f3f4f6;
+  color: #374151;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.badge-outstanding {
+  background-color: #fed7aa;
+  color: #92400e;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.badge-deferred {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.badge-default {
+  background-color: #f3f4f6;
+  color: #374151;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.pending-badge {
+  background-color: #fef3c7;
+  color: #92400e;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.no-extensions-badge {
+  background-color: #e5e7eb;
+  color: #4b5563;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.available-badge {
+  background-color: #d1fae5;
+  color: #065f46;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+/* ========================================
+   BUTTON STYLES - UTILITIES
+   ======================================== */
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #030213;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #1a0f2e;
+}
+
+.btn-secondary {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+  background-color: #e5e7eb;
+}
+
+.btn-danger {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+.btn-success {
+  background-color: #16a34a;
+  color: #ffffff;
+}
+
+.btn-success:hover {
+  background-color: #15803d;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   POPOVER & Z-INDEX MANAGEMENT
+   ======================================== */
+
+.popover-content {
+  z-index: 10;
+}
+
+/* ========================================
+   TAILWIND-INCOMPATIBLE TEXT UTILITIES
+   ======================================== */
+
+.text-3xl {
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+
+.text-neutral-900 {
+  color: #111827;
+}
+
+.text-neutral-600 {
+  color: #6b7280;
+}
+
+/* ========================================
+   MARGIN & SPACING UTILITIES
+   ======================================== */
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.mt-2rem {
+  margin-top: 2rem;
+}
+
+.text-center {
+  text-align: center;
+}

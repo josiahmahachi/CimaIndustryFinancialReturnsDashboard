@@ -5,6 +5,7 @@ namespace blazor_wasm_ui.Models;
 /// </summary>
 public enum FundType
 {
+    None,
     MutualFund,
     PrivateFund
 }

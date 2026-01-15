@@ -1,15 +1,15 @@
 @* Header component - top navigation bar *@
 
-<div class="header-container">
-    <div class="header-left">
-        <h1 class="header-title">@Title</h1>
+<div style="background-color: rgb(78, 152, 210);" class="text-white px-6 py-4 flex justify-between items-center">
+    <div class="flex-1">
+        <h1 class="text-2xl font-semibold">@Title</h1>
     </div>
 
-    <div class="header-right">
+    <div class="flex items-center gap-4">
         <!-- User info section -->
-        <div class="header-user">
-            <span class="user-name">User Account</span>
-            <button class="logout-btn" @onclick="HandleLogout">Logout</button>
+        <div class="flex items-center gap-3">
+            <span class="text-sm">User Account</span>
+            <button class="px-4 py-2 bg-white rounded text-sm font-medium cursor-pointer hover:bg-gray-100 transition-colors" style="color: rgb(78, 152, 210);" @onclick="HandleLogout">Logout</button>
         </div>
     </div>
 </div>
@@ -19,7 +19,7 @@
     /// Page title to display in header
     /// </summary>
     [Parameter]
-    public string Title { get; set; } = "Financial Returns Dashboard";
+    public string Title { get; set; } = "Returns Filing & Extension Portal";
 
     private void HandleLogout()
     {
