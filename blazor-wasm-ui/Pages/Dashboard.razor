@@ -1,0 +1,39 @@
+@page "/"
+@page "/filings"
+
+<PageTitle>Filings - Financial Returns Dashboard</PageTitle>
+
+<div class="dashboard-container">
+    <!-- Tab Navigation (placeholder for TopNavigation) -->
+    <div class="top-navigation-placeholder">
+        <h2>Top Navigation Tabs</h2>
+        <p>Tabs: Active | Submitted | Returned | Reports/Analytics</p>
+    </div>
+
+    <!-- Filters Section (placeholder for FiltersSection) -->
+    <section class="filters-section-placeholder">
+        <h3>Filters Section</h3>
+        <p>Search, Fund Type, Status, Period Year filters</p>
+    </section>
+
+    <!-- Returns Table (placeholder for ReturnsTable) -->
+    <section class="returns-table-placeholder">
+        <h3>Returns Table</h3>
+        <p>8 columns: Filing ID, Entity Details, Period, Due Date, Status, Extensions, Extension Status, Actions</p>
+        <p>Loading data...</p>
+    </section>
+
+    <!-- Help Section (placeholder for HelpSection) -->
+    <section class="help-section-placeholder">
+        <h3>Help Section</h3>
+        <p>Help and support information</p>
+    </section>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // TODO: Load financial returns data from service
+        base.OnInitialized();
+    }
+}

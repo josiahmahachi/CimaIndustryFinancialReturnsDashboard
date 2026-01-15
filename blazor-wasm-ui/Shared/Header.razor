@@ -1,0 +1,29 @@
+@* Header component - top navigation bar *@
+
+<div class="header-container">
+    <div class="header-left">
+        <h1 class="header-title">@Title</h1>
+    </div>
+
+    <div class="header-right">
+        <!-- User info section -->
+        <div class="header-user">
+            <span class="user-name">User Account</span>
+            <button class="logout-btn" @onclick="HandleLogout">Logout</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Page title to display in header
+    /// </summary>
+    [Parameter]
+    public string Title { get; set; } = "Financial Returns Dashboard";
+
+    private void HandleLogout()
+    {
+        // TODO: Implement logout functionality
+        Console.WriteLine("Logout clicked");
+    }
+}

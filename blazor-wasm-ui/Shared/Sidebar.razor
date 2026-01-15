@@ -1,0 +1,89 @@
+@* Sidebar navigation component - placeholder matching React Sidebar props *@
+
+<div class="sidebar-wrapper">
+    <!-- Sidebar header with collapse toggle -->
+    <div class="sidebar-header">
+        <div class="sidebar-title">
+            @if (!IsCollapsed)
+            {
+                <span>Dashboard</span>
+            }
+        </div>
+        <button class="sidebar-toggle" @onclick="OnToggleCollapse" aria-label="Toggle sidebar">
+            ☰
+        </button>
+    </div>
+
+    <!-- Sidebar menu items -->
+    <nav class="sidebar-nav">
+        <div class="menu-item @(ActiveItem == "filings" ? "active" : "")" 
+             @onclick="@(() => OnItemClick.InvokeAsync("filings"))">
+            <span class="menu-icon">📄</span>
+            @if (!IsCollapsed)
+            {
+                <span class="menu-label">Filings</span>
+            }
+        </div>
+
+        <div class="menu-item @(ActiveItem == "requests" ? "active" : "")" 
+             @onclick="@(() => OnItemClick.InvokeAsync("requests"))">
+            <span class="menu-icon">📋</span>
+            @if (!IsCollapsed)
+            {
+                <span class="menu-label">Requests</span>
+            }
+        </div>
+
+        <div class="menu-item @(ActiveItem == "applications" ? "active" : "")" 
+             @onclick="@(() => OnItemClick.InvokeAsync("applications"))">
+            <span class="menu-icon">📝</span>
+            @if (!IsCollapsed)
+            {
+                <span class="menu-label">Applications</span>
+            }
+        </div>
+
+        <div class="menu-item @(ActiveItem == "reports" ? "active" : "")" 
+             @onclick="@(() => OnItemClick.InvokeAsync("reports"))">
+            <span class="menu-icon">📊</span>
+            @if (!IsCollapsed)
+            {
+                <span class="menu-label">Reports</span>
+            }
+        </div>
+    </nav>
+
+    <!-- Sidebar footer -->
+    <div class="sidebar-footer">
+        @if (!IsCollapsed)
+        {
+            <p class="sidebar-version">v1.0.0</p>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// The currently active menu item
+    /// </summary>
+    [Parameter]
+    public string ActiveItem { get; set; } = "filings";
+
+    /// <summary>
+    /// Whether sidebar is in collapsed state
+    /// </summary>
+    [Parameter]
+    public bool IsCollapsed { get; set; } = false;
+
+    /// <summary>
+    /// Callback when a menu item is clicked
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnItemClick { get; set; }
+
+    /// <summary>
+    /// Callback when sidebar collapse toggle is clicked
+    /// </summary>
+    [Parameter]
+    public EventCallback OnToggleCollapse { get; set; }
+}
