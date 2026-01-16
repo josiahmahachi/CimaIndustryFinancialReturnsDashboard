@@ -55,3 +55,32 @@ public enum PendingRequestStatus
     Approved,
     Rejected
 }
+
+/// <summary>
+/// Extension type enumeration - derived from React extension types
+/// </summary>
+public enum ExtensionType
+{
+    None,
+    OneMonth,
+    TwoMonth,
+    ThreeMonth,
+    Waiver,
+    Deferral,
+    Unlock
+}
+
+/// <summary>
+/// Waiver reason enumeration - derived from React waiver reasons
+/// </summary>
+public enum WaiverReason
+{
+    ExceptionalCircumstances,
+    FundDissolvingMerger,
+    FundNotLaunchedDeregistered,
+    FundLaunchedDeregistered,
+    FundInsufficientCapital,
+    FundTransferringJurisdiction,
+    FundUnableAuditedAccounts,
+    FundVoluntarilyLiquidated
+}
