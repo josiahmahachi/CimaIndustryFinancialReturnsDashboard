@@ -1,0 +1,153 @@
+@using blazor_wasm_ui.Models
+@using System.Collections.Generic
+
+<div class="bg-white rounded-lg border border-neutral-200 shadow-sm mb-6">
+    <div class="px-6 py-4 border-b border-neutral-200">
+        <h3 class="text-lg text-neutral-900">Request Summary</h3>
+    </div>
+    <div class="p-6">
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-neutral-700">Extension Fee</span>
+                <span class="text-sm text-neutral-900">CI$ @ExtensionFee.ToString("N0").00 (US$ @(ExtensionFee / 0.82m).ToString("N2"))</span>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-neutral-700">Reporting Period</span>
+                <span class="text-sm text-neutral-900">@ReturnData.Period</span>
+            </div>
+
+            @if (!IsMultiFund)
+            {
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-neutral-700">Extension Type</span>
+                    <span class="@(ExtensionType != null && ExtensionType != "none" ? "text-sm text-neutral-900" : "text-sm text-neutral-500")">
+                        @(ExtensionType == "none" ? "No Extension" : ExtensionType?.Replace("-", " ")?.Replace(" ", " ").ToUpper() ?? "Not Selected")
+                    </span>
+                </div>
+            }
+
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-neutral-700">Current Filing Date</span>
+                <span class="text-sm text-neutral-900">@ReturnData.DueDate</span>
+            </div>
+
+            <div class="w-full h-px bg-neutral-200 my-4"></div>
+
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-neutral-700">New Extension Date</span>
+                <span class="@((ExtensionType != null || HasExtensions) ? "text-sm text-neutral-900" : "text-sm text-neutral-500")">
+                    @(IsMultiFund ? (HasExtensions ? "Varies by Sub-Fund" : "N/A") : Details.NewDate)
+                </span>
+            </div>
+
+            @if (!IsMultiFund)
+            {
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-neutral-700">Extensions Remaining (if approved)</span>
+                    <span class="text-sm text-neutral-900">
+                        @(ExtensionType == "waiver" || ExtensionType == "deferral" ? ReturnData.MaxExtensions - ReturnData.ExtensionsUsed : Math.Max(0, ReturnData.MaxExtensions - ReturnData.ExtensionsUsed - 1))
+                    </span>
+                </div>
+            }
+
+            <div class="mt-6 p-3 bg-neutral-50 rounded-md">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs text-neutral-600">
+                        @(IsMultiFund ? "Extension details will vary based on selected sub-fund extension types" : ExtensionType == "none" ? "No extension selected - original filing date remains unchanged" : ExtensionType != null ? $"This will be your {GetOrdinal(ExtensionType)} extension request for this reporting period" : "This will be your first extension request for this reporting period")
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string ExtensionType { get; set; }
+
+    [Parameter]
+    public List<SubFund> SubFunds { get; set; }
+
+    [Parameter]
+    public FinancialReturn ReturnData { get; set; }
+
+    private bool IsMultiFund => ReturnData.FundType == FundType.MutualFund && ReturnData.FundStructure == FundStructure.MultiFund;
+
+    private bool HasExtensions => SubFunds?.Any(sf => !string.IsNullOrEmpty(sf.ExtensionType) && sf.ExtensionType != "none") ?? false;
+
+    private (string NewDate, int Remaining) Details => GetExtensionDetails(ExtensionType);
+
+    private decimal ExtensionFee => CalculateExtensionFee();
+
+    private (string NewDate, int Remaining) GetExtensionDetails(string type)
+    {
+        var baseDate = DateTime.Parse(ReturnData.DueDate);
+        switch (type)
+        {
+            case "1-month":
+                return (baseDate.AddMonths(1).ToString("MMMM d, yyyy"), 2);
+            case "2-month":
+                return (baseDate.AddMonths(2).ToString("MMMM d, yyyy"), 1);
+            case "3-month":
+                return (baseDate.AddMonths(3).ToString("MMMM d, yyyy"), 0);
+            case "waiver":
+                return ("Waiver under review", 3);
+            case "deferral":
+                return (baseDate.AddMonths(6).ToString("MMMM d, yyyy"), 2);
+            case "none":
+                return ("No Extension", 3);
+            default:
+                return ("N/A", 3);
+        }
+    }
+
+    private decimal CalculateExtensionFee()
+    {
+        if (!IsMultiFund)
+        {
+            return ExtensionType switch
+            {
+                "1-month" => 625,
+                "2-month" => 625 * 2,
+                "3-month" => 625 * 3,
+                "waiver" => 625,
+                "deferral" => 0,
+                "none" => 0,
+                _ => 0
+            };
+        }
+        else
+        {
+            if (SubFunds == null) return 0;
+            decimal totalFee = 0;
+            foreach (var subFund in SubFunds)
+            {
+                if (!string.IsNullOrEmpty(subFund.ExtensionType) && subFund.ExtensionType != "none")
+                {
+                    totalFee += subFund.ExtensionType switch
+                    {
+                        "1-month" => 625,
+                        "2-month" => 625 * 2,
+                        "3-month" => 625 * 3,
+                        "waiver" => 625,
+                        "deferral" => 0,
+                        _ => 0
+                    };
+                }
+            }
+            return totalFee;
+        }
+    }
+
+    private string GetOrdinal(string extensionType)
+    {
+        return extensionType switch
+        {
+            "1-month" => "first",
+            "2-month" => "second",
+            "3-month" => "third",
+            _ => "first"
+        };
+    }
+}

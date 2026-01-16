@@ -1,0 +1,58 @@
+@using System.Collections.Generic
+
+<div class="progress-indicator mb-6">
+    <div class="flex items-center justify-between">
+        @foreach (var step in Steps)
+        {
+            var isActive = step.Number == CurrentStep;
+            var isCompleted = step.Number < CurrentStep;
+
+            <div class="flex items-center flex-1">
+                <div class="@GetStepIndicatorClass(isActive, isCompleted) mr-3">
+                    @if (isCompleted)
+                    {
+                        <span>✓</span>
+                    }
+                    else
+                    {
+                        <span>@step.Number</span>
+                    }
+                </div>
+                <span class="text-sm font-medium">
+                    @step.Label
+                </span>
+                @if (step.Number < Steps.Count)
+                {
+                    <div class="flex-1 h-1 bg-neutral-300 mx-4"></div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int CurrentStep { get; set; } = 1;
+
+    [Parameter]
+    public List<StepItem> Steps { get; set; } = new();
+
+    [Parameter]
+    public bool SkipPayment { get; set; } = false;
+
+    public class StepItem
+    {
+        public int Number { get; set; }
+        public string Label { get; set; } = "";
+    }
+
+    private string GetStepIndicatorClass(bool isActive, bool isCompleted)
+    {
+        var baseClass = "w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm";
+        if (isCompleted)
+            return baseClass + " bg-green-500 text-white";
+        if (isActive)
+            return baseClass + " bg-blue-500 text-white";
+        return baseClass + " bg-neutral-300 text-neutral-700";
+    }
+}

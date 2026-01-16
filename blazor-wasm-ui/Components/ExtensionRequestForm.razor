@@ -1,0 +1,385 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using blazor_wasm_ui.Models
+@using blazor_wasm_ui.Components
+@inject NavigationManager NavigationManager
+
+@if (ReturnData != null)
+{
+    <Breadcrumb Items="BreadcrumbItems" />
+
+    <div class="mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <button @onclick="HandleBack" class="btn btn-secondary px-4 py-2 text-sm">
+                ← Back to Dashboard
+            </button>
+        </div>
+
+        <div class="mb-6">
+            <ProgressIndicator CurrentStep="1" Steps="Steps" SkipPayment="IsDeferralRequest()" />
+        </div>
+
+        <h1 class="text-3xl text-neutral-900 mb-2">Request Extension for Financial Return</h1>
+        <p class="text-neutral-600">Upload required documents and complete your extension request.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2">
+            <FundSummary 
+                ReturnData="ReturnData"
+                ExtensionType="SelectedExtensionType"
+                ExtensionTypeChanged="ExtensionTypeChanged"
+                WaiverReason="SelectedWaiverReason"
+                WaiverReasonChanged="WaiverReasonChanged" />
+
+            @if (IsMultiFund && SubFunds != null && SubFunds.Count > 0)
+            {
+                <SubFundsSection 
+                    SubFunds="SubFunds"
+                    AvailableSubFunds="AvailableSubFunds"
+                    OnExtensionChange="HandleSubFundExtensionChange"
+                    OnWaiverReasonChange="HandleSubFundWaiverReasonChange"
+                    OnAddSubFundCallback="HandleAddSubFund"
+                    OnRemoveSubFundCallback="HandleRemoveSubFund" />
+            }
+
+            <DocumentUpload 
+                CoverLetter="CoverLetter"
+                AuditorLetter="AuditorLetter"
+                OperatorAffidavit="OperatorAffidavit"
+                AdministratorLetter="AdministratorLetter"
+                LiquidatorReport="LiquidatorReport"
+                OtherDocuments="OtherDocuments"
+                AdditionalComments="AdditionalComments"
+                OnCoverLetterChange="HandleCoverLetterChange"
+                OnAuditorLetterChange="HandleAuditorLetterChange"
+                OnOperatorAffidavitChange="HandleOperatorAffidavitChange"
+                OnAdministratorLetterChange="HandleAdministratorLetterChange"
+                OnLiquidatorReportChange="HandleLiquidatorReportChange"
+                OnOtherDocumentsChange="HandleOtherDocumentsChange"
+                OnAdditionalCommentsChange="HandleAdditionalCommentsChange"
+                ExtensionType="SelectedExtensionType"
+                WaiverReason="SelectedWaiverReason"
+                SubFunds="SubFunds"
+                IsMultiFund="IsMultiFund" />
+
+            <div class="flex justify-between">
+                <button @onclick="HandleSaveDraft" class="btn btn-secondary px-6 py-2 text-sm">
+                    💾 Save Draft
+                </button>
+                <div class="flex space-x-3">
+                    <button @onclick="HandleBack" class="btn btn-secondary px-6 py-2 text-sm">
+                        Back
+                    </button>
+                    <button @onclick="HandleContinue" disabled="!IsFormValid" class="btn btn-primary px-6 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                        @(IsDeferralRequest() ? "Submit Request" : "Continue to Payment")
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <ExtensionSummary 
+                ExtensionType="@(IsMultiFund ? "" : SelectedExtensionType)"
+                SubFunds="@(IsMultiFund ? SubFunds : null)"
+                ReturnData="ReturnData" />
+            <Guidelines />
+            <ContactSupport />
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public FinancialReturn ReturnData { get; set; }
+
+    [Parameter]
+    public EventCallback OnBack { get; set; }
+
+    [Parameter]
+    public EventCallback<ExtensionRequestData> OnContinue { get; set; }
+
+    private string SelectedExtensionType = "";
+    private string SelectedWaiverReason = "";
+    private IBrowserFile? CoverLetter;
+    private IBrowserFile? AuditorLetter;
+    private IBrowserFile? OperatorAffidavit;
+    private IBrowserFile? AdministratorLetter;
+    private IBrowserFile? LiquidatorReport;
+    private IBrowserFile? OtherDocuments;
+    private string AdditionalComments = "";
+
+    private List<SubFund> SubFunds = new();
+    private List<SubFund> AvailableSubFunds = new();
+    private bool IsMultiFund = false;
+
+    private List<Breadcrumb.BreadcrumbItem> BreadcrumbItems = new();
+
+    private List<ProgressIndicator.StepItem> Steps = new()
+    {
+        new() { Number = 1, Label = "Request Details" },
+        new() { Number = 2, Label = "Payment" },
+        new() { Number = 3, Label = "Confirmation" }
+    };
+
+    protected override void OnInitialized()
+    {
+        BreadcrumbItems = new List<Breadcrumb.BreadcrumbItem>
+        {
+            new() { Label = "Financial Returns", OnClick = HandleBreadcrumbBack },
+            new() { Label = "Request Extension" }
+        };
+
+        if (ReturnData != null)
+        {
+            IsMultiFund = ReturnData.FundType == FundType.MutualFund && ReturnData.FundStructure == FundStructure.MultiFund;
+
+            if (IsMultiFund)
+            {
+                SubFunds = new List<SubFund>
+                {
+                    new SubFund
+                    {
+                        Id = "1",
+                        Name = "Global Equity Sub-Fund",
+                        Description = "Sub-fund 1 of 3",
+                        CurrentFilingDate = "March 31, 2025",
+                        ExtensionType = "",
+                        ExtensionsUsed = 0,
+                        UsedExtensionDays = 0,
+                        MaxExtensions = 3,
+                        EntityId = "201"
+                    }
+                };
+
+                AvailableSubFunds = new List<SubFund>
+                {
+                    new SubFund
+                    {
+                        Id = "2",
+                        Name = "Fixed Income Sub-Fund",
+                        Description = "Sub-fund 2 of 3",
+                        CurrentFilingDate = "March 31, 2025",
+                        ExtensionsUsed = 1,
+                        UsedExtensionDays = 30,
+                        MaxExtensions = 3,
+                        EntityId = "202"
+                    },
+                    new SubFund
+                    {
+                        Id = "3",
+                        Name = "Alternative Assets Sub-Fund",
+                        Description = "Sub-fund 3 of 3",
+                        CurrentFilingDate = "March 31, 2025",
+                        ExtensionsUsed = 2,
+                        UsedExtensionDays = 60,
+                        MaxExtensions = 3,
+                        EntityId = "203"
+                    }
+                };
+            }
+        }
+    }
+
+    private async Task ExtensionTypeChanged(string value)
+    {
+        SelectedExtensionType = value;
+        if (value != "waiver")
+        {
+            SelectedWaiverReason = "";
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task WaiverReasonChanged(string value)
+    {
+        SelectedWaiverReason = value;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleSubFundExtensionChange((string subFundId, string extensionType) args)
+    {
+        var subFund = SubFunds.FirstOrDefault(sf => sf.Id == args.subFundId);
+        if (subFund != null)
+        {
+            subFund.ExtensionType = args.extensionType;
+            if (args.extensionType != "waiver")
+            {
+                subFund.WaiverReason = null;
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task HandleSubFundWaiverReasonChange((string subFundId, string reason) args)
+    {
+        var subFund = SubFunds.FirstOrDefault(sf => sf.Id == args.subFundId);
+        if (subFund != null)
+        {
+            subFund.WaiverReason = args.reason;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task HandleAddSubFund(string availableSubFundId)
+    {
+        var availableSubFund = AvailableSubFunds.FirstOrDefault(sf => sf.Id == availableSubFundId);
+        if (availableSubFund != null)
+        {
+            var newSubFund = new SubFund
+            {
+                Id = availableSubFund.Id,
+                Name = availableSubFund.Name,
+                Description = availableSubFund.Description,
+                CurrentFilingDate = availableSubFund.CurrentFilingDate,
+                ExtensionType = "none",
+                WaiverReason = null,
+                ExtensionsUsed = availableSubFund.ExtensionsUsed,
+                UsedExtensionDays = availableSubFund.UsedExtensionDays,
+                MaxExtensions = availableSubFund.MaxExtensions,
+                EntityId = availableSubFund.EntityId
+            };
+            SubFunds.Add(newSubFund);
+            AvailableSubFunds.Remove(availableSubFund);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task HandleRemoveSubFund(string subFundId)
+    {
+        var subFundToRemove = SubFunds.FirstOrDefault(sf => sf.Id == subFundId);
+        if (subFundToRemove != null)
+        {
+            SubFunds.Remove(subFundToRemove);
+            var availableSubFund = new SubFund
+            {
+                Id = subFundToRemove.Id,
+                Name = subFundToRemove.Name,
+                Description = subFundToRemove.Description,
+                CurrentFilingDate = subFundToRemove.CurrentFilingDate,
+                ExtensionsUsed = subFundToRemove.ExtensionsUsed,
+                UsedExtensionDays = subFundToRemove.UsedExtensionDays,
+                MaxExtensions = subFundToRemove.MaxExtensions,
+                EntityId = subFundToRemove.EntityId
+            };
+            AvailableSubFunds.Add(availableSubFund);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task HandleSaveDraft()
+    {
+        // TODO: Implement save draft functionality
+        await Task.CompletedTask;
+    }
+
+    private async Task HandleBack()
+    {
+        await OnBack.InvokeAsync();
+    }
+
+    private async Task HandleContinue()
+    {
+        if (!IsFormValid) return;
+
+        var requestData = new ExtensionRequestData
+        {
+            ExtensionType = SelectedExtensionType,
+            WaiverReason = SelectedExtensionType == "waiver" ? SelectedWaiverReason : null,
+            SubFunds = IsMultiFund ? SubFunds : null,
+            CoverLetter = CoverLetter,
+            AuditorLetter = AuditorLetter,
+            OperatorAffidavit = OperatorAffidavit,
+            AdministratorLetter = AdministratorLetter,
+            LiquidatorReport = LiquidatorReport,
+            OtherDocuments = OtherDocuments,
+            AdditionalComments = string.IsNullOrWhiteSpace(AdditionalComments) ? null : AdditionalComments
+        };
+
+        await OnContinue.InvokeAsync(requestData);
+    }
+
+    private bool IsDeferralRequest()
+    {
+        if (IsMultiFund)
+        {
+            var selectedSubFunds = SubFunds.Where(sf => !string.IsNullOrEmpty(sf.ExtensionType) && sf.ExtensionType != "none");
+            return selectedSubFunds.Any() && selectedSubFunds.All(sf => sf.ExtensionType == "deferral");
+        }
+        return SelectedExtensionType == "deferral";
+    }
+
+    private bool IsFormValid
+    {
+        get
+        {
+            if (CoverLetter == null) return false;
+
+            if (IsMultiFund)
+            {
+                var hasValidExtensions = SubFunds.Any(sf => !string.IsNullOrEmpty(sf.ExtensionType) && sf.ExtensionType != "none");
+                if (!hasValidExtensions) return false;
+
+                var hasValidWaiverReasons = SubFunds.All(sf => sf.ExtensionType != "waiver" || !string.IsNullOrEmpty(sf.WaiverReason));
+                if (!hasValidWaiverReasons) return false;
+
+                // Add more validation as needed
+                return true;
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(SelectedExtensionType) || SelectedExtensionType == "none") return false;
+                if (SelectedExtensionType == "waiver" && string.IsNullOrEmpty(SelectedWaiverReason)) return false;
+
+                // Add document validation based on extension type
+                return true;
+            }
+        }
+    }
+
+    private async Task HandleCoverLetterChange(IBrowserFile file)
+    {
+        CoverLetter = file;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleAuditorLetterChange(IBrowserFile? file)
+    {
+        AuditorLetter = file;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleOperatorAffidavitChange(IBrowserFile? file)
+    {
+        OperatorAffidavit = file;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleAdministratorLetterChange(IBrowserFile? file)
+    {
+        AdministratorLetter = file;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleLiquidatorReportChange(IBrowserFile? file)
+    {
+        LiquidatorReport = file;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleOtherDocumentsChange(IBrowserFile? file)
+    {
+        OtherDocuments = file;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleAdditionalCommentsChange(string comments)
+    {
+        AdditionalComments = comments;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleBreadcrumbBack()
+    {
+        NavigationManager.NavigateTo("/filings");
+    }
+}

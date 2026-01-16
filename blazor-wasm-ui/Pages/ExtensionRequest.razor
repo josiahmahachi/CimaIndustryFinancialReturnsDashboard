@@ -1,6 +1,70 @@
-@page "/extension-request"
-@layout MainLayout
+@page "/extension-request/{id}"
+@using blazor_wasm_ui.Models
+@using blazor_wasm_ui.Services
+@using blazor_wasm_ui.Components
+@inject NavigationManager NavigationManager
+@inject IReturnsDataService ReturnsDataService
 
-<h1>Extension Request</h1>
+<div class="w-full min-h-screen bg-neutral-50">
+    <div class="px-6 py-8 max-w-4xl mx-auto">
+        @if (Loading)
+        {
+            <div class="text-center py-12">
+                <p class="text-neutral-600">Loading extension request...</p>
+            </div>
+        }
+        else if (ReturnData == null)
+        {
+            <div class="bg-white border border-red-200 rounded-lg p-6 text-center">
+                <p class="text-red-700 font-medium mb-4">Filing not found</p>
+                <p class="text-neutral-600 mb-4">The filing you're trying to request an extension for could not be found.</p>
+                <button 
+                    @onclick="@HandleBack"
+                    class="btn btn-primary">
+                    Back to Filings
+                </button>
+            </div>
+        }
+        else
+        {
+            <ExtensionRequestForm 
+                ReturnData="@ReturnData"
+                OnBack="@HandleBack"
+                OnContinue="@HandleContinue" />
+        }
+    </div>
+</div>
 
-<p>Extension request form will be implemented in Ticket 2.</p>
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private FinancialReturn? ReturnData;
+    private bool Loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            ReturnData = await ReturnsDataService.GetReturnByIdAsync(Id);
+            Loading = false;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading return: {ex.Message}");
+            Loading = false;
+        }
+    }
+
+    private void HandleBack()
+    {
+        NavigationManager.NavigateTo("/filings");
+    }
+
+    private void HandleContinue(ExtensionRequestData requestData)
+    {
+        // TODO: Store the extension request data (in session, local storage, or service)
+        // For now, navigate to payment page with the return ID
+        NavigationManager.NavigateTo($"/payment/{Id}");
+    }
+}

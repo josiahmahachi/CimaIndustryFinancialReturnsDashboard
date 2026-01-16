@@ -1,0 +1,43 @@
+@using System.Collections.Generic
+
+@if (ShowBackButton)
+{
+    <button @onclick="OnBackToDashboard" class="btn btn-secondary px-4 py-2 text-sm mb-6">
+        ← Back to Dashboard
+    </button>
+}
+else
+{
+    <div class="breadcrumb flex items-center space-x-2 text-sm text-neutral-600 mb-6">
+        @foreach (var item in Items)
+        {
+            var index = Items.IndexOf(item);
+            @if (index > 0)
+            {
+                <span class="text-neutral-400 px-1">›</span>
+            }
+            <span
+                class="@(item.OnClick != null ? "text-blue-600 hover:underline cursor-pointer" : index == Items.Count - 1 ? "text-neutral-800" : "text-neutral-600")"
+                @onclick="item.OnClick">
+                @item.Label
+            </span>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<BreadcrumbItem> Items { get; set; } = new();
+
+    [Parameter]
+    public Action? OnBackToDashboard { get; set; }
+
+    [Parameter]
+    public bool ShowBackButton { get; set; } = false;
+
+    public class BreadcrumbItem
+    {
+        public string Label { get; set; } = "";
+        public Action? OnClick { get; set; }
+    }
+}

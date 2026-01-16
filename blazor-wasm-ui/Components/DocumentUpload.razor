@@ -1,0 +1,336 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using blazor_wasm_ui.Models
+
+<section class="document-upload-section space-y-6">
+    <!-- Cover Letter -->
+    <div class="document-group">
+        <label for="cover-letter" class="block text-sm font-medium text-neutral-900 mb-2">
+            Cover Letter
+            <span class="text-red-600">*</span>
+        </label>
+        <div class="file-input-wrapper border-2 border-dashed border-neutral-300 rounded-lg p-4 bg-neutral-50">
+            <InputFile 
+                id="cover-letter"
+                OnChange="@HandleCoverLetterChange"
+                class="block w-full" />
+            @if (CoverLetter != null)
+            {
+                <div class="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+                    ✓ @CoverLetter.Name selected
+                </div>
+            }
+        </div>
+        <p class="text-xs text-neutral-600 mt-1">Required for all requests</p>
+    </div>
+
+    <!-- Auditor Letter -->
+    @if (IsAuditorLetterRequired())
+    {
+        <div class="document-group">
+            <label for="auditor-letter" class="block text-sm font-medium text-neutral-900 mb-2">
+                Auditor Letter
+                <span class="text-red-600">*</span>
+            </label>
+            <div class="file-input-wrapper border-2 border-dashed border-neutral-300 rounded-lg p-4 bg-neutral-50">
+                <InputFile 
+                    id="auditor-letter"
+                    OnChange="@HandleAuditorLetterChange"
+                    class="block w-full" />
+                @if (AuditorLetter != null)
+                {
+                    <div class="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+                        ✓ @AuditorLetter.Name selected
+                    </div>
+                }
+            </div>
+            <p class="text-xs text-neutral-600 mt-1">Required for 2-month or 3-month extensions</p>
+        </div>
+    }
+
+    <!-- Operator Affidavit -->
+    @if (IsOperatorAffidavitRequired())
+    {
+        <div class="document-group">
+            <label for="operator-affidavit" class="block text-sm font-medium text-neutral-900 mb-2">
+                Operator Affidavit
+                <span class="text-red-600">*</span>
+            </label>
+            <div class="file-input-wrapper border-2 border-dashed border-neutral-300 rounded-lg p-4 bg-neutral-50">
+                <InputFile 
+                    id="operator-affidavit"
+                    OnChange="@HandleOperatorAffidavitChange"
+                    class="block w-full" />
+                @if (OperatorAffidavit != null)
+                {
+                    <div class="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+                        ✓ @OperatorAffidavit.Name selected
+                    </div>
+                }
+            </div>
+            <p class="text-xs text-neutral-600 mt-1">Required for waiver requests with specific reasons</p>
+        </div>
+    }
+
+    <!-- Administrator Letter -->
+    @if (IsAdministratorLetterRequired())
+    {
+        <div class="document-group">
+            <label for="administrator-letter" class="block text-sm font-medium text-neutral-900 mb-2">
+                Administrator Letter
+                <span class="text-red-600">*</span>
+            </label>
+            <div class="file-input-wrapper border-2 border-dashed border-neutral-300 rounded-lg p-4 bg-neutral-50">
+                <InputFile 
+                    id="administrator-letter"
+                    OnChange="@HandleAdministratorLetterChange"
+                    class="block w-full" />
+                @if (AdministratorLetter != null)
+                {
+                    <div class="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+                        ✓ @AdministratorLetter.Name selected
+                    </div>
+                }
+            </div>
+            <p class="text-xs text-neutral-600 mt-1">Required for deregistered funds</p>
+        </div>
+    }
+
+    <!-- Liquidator Report -->
+    @if (IsLiquidatorReportRequired())
+    {
+        <div class="document-group">
+            <label for="liquidator-report" class="block text-sm font-medium text-neutral-900 mb-2">
+                Liquidator Report
+                <span class="text-red-600">*</span>
+            </label>
+            <div class="file-input-wrapper border-2 border-dashed border-neutral-300 rounded-lg p-4 bg-neutral-50">
+                <InputFile 
+                    id="liquidator-report"
+                    OnChange="@HandleLiquidatorReportChange"
+                    class="block w-full" />
+                @if (LiquidatorReport != null)
+                {
+                    <div class="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+                        ✓ @LiquidatorReport.Name selected
+                    </div>
+                }
+            </div>
+            <p class="text-xs text-neutral-600 mt-1">Required for liquidated funds</p>
+        </div>
+    }
+
+    <!-- Other Documents (Optional) -->
+    <div class="document-group">
+        <label for="other-documents" class="block text-sm font-medium text-neutral-900 mb-2">
+            Other Documents
+            <span class="text-neutral-500">(Optional)</span>
+        </label>
+        <div class="file-input-wrapper border-2 border-dashed border-neutral-300 rounded-lg p-4 bg-neutral-50">
+            <InputFile 
+                id="other-documents"
+                OnChange="@HandleOtherDocumentsChange"
+                class="block w-full" />
+            @if (OtherDocuments != null)
+            {
+                <div class="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+                    ✓ @OtherDocuments.Name selected
+                </div>
+            }
+        </div>
+        <p class="text-xs text-neutral-600 mt-1">Any additional supporting documents</p>
+    </div>
+
+    <!-- Additional Comments -->
+    <div class="document-group">
+        <label for="additional-comments" class="block text-sm font-medium text-neutral-900 mb-2">
+            Additional Comments
+            <span class="text-neutral-500">(Optional)</span>
+        </label>
+        <textarea 
+            id="additional-comments"
+            @bind="@AdditionalComments"
+            placeholder="Enter any additional comments or explanations..."
+            class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows="4">
+        </textarea>
+    </div>
+</section>
+
+@code {
+    [Parameter]
+    public IBrowserFile? CoverLetter { get; set; }
+
+    [Parameter]
+    public IBrowserFile? AuditorLetter { get; set; }
+
+    [Parameter]
+    public IBrowserFile? OperatorAffidavit { get; set; }
+
+    [Parameter]
+    public IBrowserFile? AdministratorLetter { get; set; }
+
+    [Parameter]
+    public IBrowserFile? LiquidatorReport { get; set; }
+
+    [Parameter]
+    public IBrowserFile? OtherDocuments { get; set; }
+
+    [Parameter]
+    public string AdditionalComments { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<IBrowserFile> OnCoverLetterChange { get; set; }
+
+    [Parameter]
+    public EventCallback<IBrowserFile?> OnAuditorLetterChange { get; set; }
+
+    [Parameter]
+    public EventCallback<IBrowserFile?> OnOperatorAffidavitChange { get; set; }
+
+    [Parameter]
+    public EventCallback<IBrowserFile?> OnAdministratorLetterChange { get; set; }
+
+    [Parameter]
+    public EventCallback<IBrowserFile?> OnLiquidatorReportChange { get; set; }
+
+    [Parameter]
+    public EventCallback<IBrowserFile?> OnOtherDocumentsChange { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnAdditionalCommentsChange { get; set; }
+
+    /// <summary>
+    /// Extension type for the request (e.g., "2-month", "3-month", "waiver", "none")
+    /// </summary>
+    [Parameter]
+    public string ExtensionType { get; set; } = "";
+
+    /// <summary>
+    /// Waiver reason if extension type is waiver
+    /// </summary>
+    [Parameter]
+    public string? WaiverReason { get; set; }
+
+    /// <summary>
+    /// Sub-funds for multi-fund structures
+    /// </summary>
+    [Parameter]
+    public List<SubFund>? SubFunds { get; set; }
+
+    /// <summary>
+    /// Whether this is a multi-fund request
+    /// </summary>
+    [Parameter]
+    public bool IsMultiFund { get; set; }
+
+    private async Task HandleCoverLetterChange(InputFileChangeEventArgs args)
+    {
+        var file = args.File;
+        await OnCoverLetterChange.InvokeAsync(file);
+    }
+
+    private async Task HandleAuditorLetterChange(InputFileChangeEventArgs args)
+    {
+        var file = args.File;
+        await OnAuditorLetterChange.InvokeAsync(file);
+    }
+
+    private async Task HandleOperatorAffidavitChange(InputFileChangeEventArgs args)
+    {
+        var file = args.File;
+        await OnOperatorAffidavitChange.InvokeAsync(file);
+    }
+
+    private async Task HandleAdministratorLetterChange(InputFileChangeEventArgs args)
+    {
+        var file = args.File;
+        await OnAdministratorLetterChange.InvokeAsync(file);
+    }
+
+    private async Task HandleLiquidatorReportChange(InputFileChangeEventArgs args)
+    {
+        var file = args.File;
+        await OnLiquidatorReportChange.InvokeAsync(file);
+    }
+
+    private async Task HandleOtherDocumentsChange(InputFileChangeEventArgs args)
+    {
+        var file = args.File;
+        await OnOtherDocumentsChange.InvokeAsync(file);
+    }
+
+    private bool IsAuditorLetterRequired()
+    {
+        // Not required for waiver requests
+        if (IsWaiverRequest()) return false;
+
+        if (IsMultiFund && SubFunds != null)
+        {
+            // For multi-fund, check if any sub-fund has 2-month or 3-month extension
+            return SubFunds.Any(sf => sf.ExtensionType == "2-month" || sf.ExtensionType == "3-month");
+        }
+        else
+        {
+            // For single fund, check if extension type is 2-month or 3-month
+            return ExtensionType == "2-month" || ExtensionType == "3-month";
+        }
+    }
+
+    private bool IsOperatorAffidavitRequired()
+    {
+        if (!IsWaiverRequest()) return false;
+
+        var reason = GetWaiverReason();
+        var requiredReasons = new[]
+        {
+            "exceptional-circumstances",
+            "fund-dissolving-merger",
+            "fund-transferring-jurisdiction",
+            "fund-insufficient-capital",
+            "fund-not-launched-deregistered",
+            "fund-launched-deregistered"
+        };
+
+        return requiredReasons.Contains(reason ?? "");
+    }
+
+    private bool IsAdministratorLetterRequired()
+    {
+        if (!IsWaiverRequest()) return false;
+
+        var reason = GetWaiverReason();
+        return reason == "fund-launched-deregistered";
+    }
+
+    private bool IsLiquidatorReportRequired()
+    {
+        if (!IsWaiverRequest()) return false;
+
+        var reason = GetWaiverReason();
+        var requiredReasons = new[] { "fund-voluntarily-liquidated", "fund-unable-audited-accounts" };
+
+        return requiredReasons.Contains(reason ?? "");
+    }
+
+    private bool IsWaiverRequest()
+    {
+        if (IsMultiFund && SubFunds != null)
+        {
+            return SubFunds.Any(sf => sf.ExtensionType == "waiver");
+        }
+        else
+        {
+            return ExtensionType == "waiver";
+        }
+    }
+
+    private string? GetWaiverReason()
+    {
+        if (IsMultiFund && SubFunds != null)
+        {
+            var waiverSubFund = SubFunds.FirstOrDefault(sf => sf.ExtensionType == "waiver");
+            return waiverSubFund?.WaiverReason;
+        }
+        return WaiverReason;
+    }
+}

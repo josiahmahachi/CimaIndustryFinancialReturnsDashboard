@@ -1,0 +1,180 @@
+@using blazor_wasm_ui.Models
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="bg-white rounded-lg border border-neutral-200 shadow-sm mb-6">
+    <div class="px-6 py-4 border-b border-neutral-200">
+        <h2 class="text-lg text-neutral-900">Request Details</h2>
+    </div>
+    <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-neutral-700 mb-2">Filing ID</label>
+                    <div class="text-sm text-neutral-900">@ReturnData.Id.PadLeft(6, '0')</div>
+                </div>
+                <div>
+                    <label class="block text-sm text-neutral-700 mb-2">Main Fund Name</label>
+                    <div class="text-sm text-neutral-900">@ReturnData.FundName</div>
+                    <div class="text-xs text-neutral-500 mt-1">Entity ID: @ReturnData.EntityId.PadLeft(6, '0')</div>
+                </div>
+                @if (!IsMultiFund)
+                {
+                    <div>
+                        <label class="block text-sm text-neutral-700 mb-2">Request Type</label>
+                        @if (ReturnData.ExtensionsUsed >= 3 && ReturnData.Status != ReturnStatus.Outstanding)
+                        {
+                            <div class="text-sm text-red-600 p-3 bg-red-50 rounded-md border border-red-200">
+                                Fund not eligible for extension
+                            </div>
+                        }
+                        else
+                        {
+                            <select @bind="ExtensionType" class="block w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Request Type</option>
+                                <option value="none">No Extension</option>
+                                @if (ReturnData.ExtensionsUsed == 0 && (90 - ReturnData.UsedExtensionDays) >= 30)
+                                {
+                                    <option value="1-month">1 Month Extension (30 days)</option>
+                                }
+                                @if (ReturnData.ExtensionsUsed == 0 && (90 - ReturnData.UsedExtensionDays) >= 60)
+                                {
+                                    <option value="2-month">2 Month Extension (60 days)</option>
+                                }
+                                @if (ReturnData.ExtensionsUsed == 0 && (90 - ReturnData.UsedExtensionDays) >= 90)
+                                {
+                                    <option value="3-month">3 Month Extension (90 days)</option>
+                                }
+                                @if (ReturnData.ExtensionsUsed == 1 && (90 - ReturnData.UsedExtensionDays) >= 30)
+                                {
+                                    <option value="1-month">1 Month Extension (30 days)</option>
+                                }
+                                @if (ReturnData.ExtensionsUsed == 1 && (90 - ReturnData.UsedExtensionDays) >= 60)
+                                {
+                                    <option value="2-month">2 Month Extension (60 days)</option>
+                                }
+                                @if (ReturnData.ExtensionsUsed == 2 && (90 - ReturnData.UsedExtensionDays) >= 30)
+                                {
+                                    <option value="1-month">1 Month Extension (30 days)</option>
+                                }
+                                <option value="waiver">Waiver</option>
+                                @if (ReturnData.ExtensionsUsed == 0 || ReturnData.Status == ReturnStatus.Outstanding)
+                                {
+                                    <option value="deferral">Deferral</option>
+                                }
+                            </select>
+                        }
+                        @if (ExtensionType == "waiver")
+                        {
+                            <div class="mt-4">
+                                <label class="block text-sm text-neutral-700 mb-2">Waiver Reason</label>
+                                <select @bind="WaiverReason" class="block w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Waiver Reason</option>
+                                    <option value="exceptional-circumstances">Exceptional Circumstances</option>
+                                    <option value="fund-dissolving-merger">Fund dissolving by way of merger within 6 mths of last audit y/e</option>
+                                    <option value="fund-not-launched-deregistered">Fund has not launched and does not wish to be deregistered</option>
+                                    <option value="fund-launched-deregistered">Fund launched and wishes to be deregistered</option>
+                                    <option value="fund-insufficient-capital">Fund launched but has not raised sufficient capital for sustainability</option>
+                                    <option value="fund-transferring-jurisdiction">Fund Transferring to another jurisdiction within 6 mths of last audited y/e</option>
+                                    <option value="fund-unable-audited-accounts">Fund unable to obtain audited accounts (see Regulatory policy for details)</option>
+                                    <option value="fund-voluntarily-liquidated">Fund voluntarily liquidated and a 3rd party liquidator covers unaudited period</option>
+                                </select>
+                            </div>
+                        }
+                    </div>
+                }
+                @if (IsMultiFund)
+                {
+                    <div>
+                        <label class="block text-sm text-neutral-700 mb-2">Reporting Period</label>
+                        <div class="text-sm text-neutral-900">@ReturnData.Period</div>
+                        <div class="text-xs text-neutral-500">@ReturnData.DueDate</div>
+                    </div>
+                }
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-neutral-700 mb-2">Fund Type</label>
+                    <div class="text-sm text-neutral-900">@ReturnData.FundType</div>
+                </div>
+                @if (ReturnData.FundStructure.HasValue)
+                {
+                    <div>
+                        <label class="block text-sm text-neutral-700 mb-2">Fund Structure</label>
+                        <div class="text-sm text-neutral-900">@ReturnData.FundStructure</div>
+                    </div>
+                }
+                @if (!IsMultiFund)
+                {
+                    <div>
+                        <label class="block text-sm text-neutral-700 mb-2">Reporting Period</label>
+                        <div class="text-sm text-neutral-900">@ReturnData.Period</div>
+                        <div class="text-xs text-neutral-500">@ReturnData.DueDate</div>
+                    </div>
+                }
+            </div>
+        </div>
+        
+        @if (!IsMultiFund)
+        {
+            <div class="mt-6 p-4 bg-neutral-50 rounded-md">
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-neutral-700">
+                        Extension Days Used: <strong>@ReturnData.UsedExtensionDays of 90 days</strong> (@(90 - ReturnData.UsedExtensionDays) days remaining)
+                    </span>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public FinancialReturn ReturnData { get; set; }
+
+    [Parameter]
+    public string ExtensionType { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ExtensionTypeChanged { get; set; }
+
+    [Parameter]
+    public string WaiverReason { get; set; }
+
+    [Parameter]
+    public EventCallback<string> WaiverReasonChanged { get; set; }
+
+    [Parameter]
+    public string UnlockReason { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> UnlockReasonChanged { get; set; }
+
+    [Parameter]
+    public string UnlockReasonOther { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<string> UnlockReasonOtherChanged { get; set; }
+
+    private bool IsMultiFund => ReturnData.FundType == FundType.MutualFund && ReturnData.FundStructure == FundStructure.MultiFund;
+
+    private string extensionType;
+    private string waiverReason;
+
+    protected override void OnParametersSet()
+    {
+        extensionType = ExtensionType;
+        waiverReason = WaiverReason;
+    }
+
+    private async Task OnExtensionTypeChanged(ChangeEventArgs e)
+    {
+        extensionType = e.Value?.ToString() ?? "";
+        await ExtensionTypeChanged.InvokeAsync(extensionType);
+    }
+
+    private async Task OnWaiverReasonChanged(ChangeEventArgs e)
+    {
+        waiverReason = e.Value?.ToString() ?? "";
+        await WaiverReasonChanged.InvokeAsync(waiverReason);
+    }
+}

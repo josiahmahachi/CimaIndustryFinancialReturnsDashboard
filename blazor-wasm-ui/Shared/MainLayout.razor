@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
 
 <div class="app-container">
     <!-- Sidebar -->
@@ -35,6 +36,46 @@
     // Current page title
     private string CurrentPageTitle = "Returns Filing & Extension Portal";
 
+    protected override void OnInitialized()
+    {
+        // Set active menu item based on current route
+        SetActiveMenuItemFromRoute();
+    }
+
+    /// <summary>
+    /// Set the active menu item based on the current route
+    /// </summary>
+    private void SetActiveMenuItemFromRoute()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var path = uri.AbsolutePath;
+
+        ActiveMenuItem = path switch
+        {
+            "/" => "home",
+            "/filings" => "filings",
+            "/extension-request" => "filings", // Extension request is part of filings
+            "/payment" => "filings", // Payment is part of filings flow
+            "/reports" => "filings", // Reports could be under filings
+            "/under-construction" => GetMenuItemFromQueryString(uri),
+            _ => "filings" // Default to filings
+        };
+    }
+
+    /// <summary>
+    /// Get menu item from query string for under-construction pages
+    /// </summary>
+    private string GetMenuItemFromQueryString(Uri uri)
+    {
+        var queryString = uri.Query;
+        if (!string.IsNullOrEmpty(queryString) && queryString.Contains("menu="))
+        {
+            var menuParam = queryString.Split("menu=")[1].Split('&')[0];
+            return Uri.UnescapeDataString(menuParam);
+        }
+        return "filings"; // Default fallback
+    }
+
     /// <summary>
     /// Toggle sidebar collapse state
     /// </summary>
@@ -49,8 +90,22 @@
     private Task OnSidebarItemClick(string itemName)
     {
         ActiveMenuItem = itemName;
-        // TODO: Implement navigation based on itemName
-        Console.WriteLine($"Menu item clicked: {itemName}");
+        
+        // Navigate to the appropriate route based on menu item
+        var route = itemName switch
+        {
+            "home" => "/",
+            "filings" => "/filings",
+            "requests" => "/under-construction?menu=requests",
+            "applications" => "/under-construction?menu=applications", 
+            "user-management" => "/under-construction?menu=user-management",
+            "settings" => "/under-construction?menu=settings",
+            "documentation" => "/under-construction?menu=documentation",
+            "support" => "/under-construction?menu=support",
+            _ => "/filings" // Default to filings
+        };
+        
+        NavigationManager.NavigateTo(route);
         return Task.CompletedTask;
     }
 }

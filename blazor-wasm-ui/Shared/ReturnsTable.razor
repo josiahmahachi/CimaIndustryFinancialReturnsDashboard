@@ -1,5 +1,6 @@
 @* Returns Table - Data Grid with Pagination *@
 @using blazor_wasm_ui.Models
+@inject NavigationManager NavigationManager
 
 <section class="bg-white border border-neutral-200 rounded overflow-hidden mb-8 shadow-sm">
     <table class="w-full border-collapse text-sm">
@@ -72,25 +73,25 @@
                             }
                         </td>
                         <td class="col-actions px-3 py-3 border-b border-neutral-200">
-                            <div class="flex flex-col gap-1">
+                            <div class="flex flex-row gap-1">
                                 @if (ret.PendingRequestType.HasValue && ret.PendingRequestStatus == PendingRequestStatus.Pending)
                                 {
-                                    <button class="btn btn-secondary" @onclick="@(() => OnFileReturn.InvokeAsync(ret.Id))">
+                                    <button type="button" class="btn btn-secondary" @onclick="@(() => OnFileReturn.InvokeAsync(ret.Id))">
                                         File Return
                                     </button>
-                                    <button class="btn btn-secondary" @onclick="@(() => OnViewExtension.InvokeAsync(ret.Id))">
+                                    <button type="button" class="btn btn-secondary" @onclick="@(() => OnViewExtension.InvokeAsync(ret.Id))">
                                         View @(ret.PendingRequestType.Value == PendingRequestType.Extension ? "Extension" : 
                                                 ret.PendingRequestType.Value == PendingRequestType.Waiver ? "Waiver" : "Deferral")
                                     </button>
                                 }
                                 else if (ret.Status == ReturnStatus.Processed)
                                 {
-                                    <button class="btn btn-secondary" @onclick="@(() => OnViewReturn.InvokeAsync(ret.Id))">
+                                    <button type="button" class="btn btn-secondary" @onclick="@(() => OnViewReturn.InvokeAsync(ret.Id))">
                                         View Return
                                     </button>
                                     @if (ret.ExtensionsUsed > 0)
                                     {
-                                        <button class="btn btn-secondary" @onclick="@(() => OnViewExtension.InvokeAsync(ret.Id))">
+                                        <button type="button" class="btn btn-secondary" @onclick="@(() => OnViewExtension.InvokeAsync(ret.Id))">
                                             View Extension
                                         </button>
                                     }
@@ -99,16 +100,16 @@
                                 {
                                     @if (ret.Status == ReturnStatus.Outstanding)
                                     {
-                                        <button class="btn btn-danger" @onclick="@(() => OnRequestUnlock.InvokeAsync(ret.Id))">
+                                        <button type="button" class="btn btn-danger" @onclick="@(() => OnRequestUnlock.InvokeAsync(ret.Id))">
                                             Unlock
                                         </button>
-                                        <button class="btn btn-primary" @onclick="@(() => OnRequestExtension.InvokeAsync(ret.Id))">
+                                        <button type="button" class="btn btn-primary" @onclick="@(() => NavigateToExtensionRequest(ret.Id))">
                                             Ext/Waiver
                                         </button>
                                     }
                                     else
                                     {
-                                        <button class="btn btn-success" @onclick="@(() => OnFileReturn.InvokeAsync(ret.Id))">
+                                        <button type="button" class="btn btn-success" @onclick="@(() => OnFileReturn.InvokeAsync(ret.Id))">
                                             File Return
                                         </button>
                                     }
@@ -117,19 +118,19 @@
                                 {
                                     @if (ret.Status == ReturnStatus.Outstanding)
                                     {
-                                        <button class="btn btn-danger" @onclick="@(() => OnRequestUnlock.InvokeAsync(ret.Id))">
+                                        <button type="button" class="btn btn-danger" @onclick="@(() => OnRequestUnlock.InvokeAsync(ret.Id))">
                                             Unlock
                                         </button>
-                                        <button class="btn btn-primary" @onclick="@(() => OnRequestExtension.InvokeAsync(ret.Id))">
+                                        <button type="button" class="btn btn-primary" @onclick="@(() => NavigateToExtensionRequest(ret.Id))">
                                             Ext/Waiver
                                         </button>
                                     }
                                     else
                                     {
-                                        <button class="btn btn-success" @onclick="@(() => OnFileReturn.InvokeAsync(ret.Id))">
+                                        <button type="button" class="btn btn-success" @onclick="@(() => OnFileReturn.InvokeAsync(ret.Id))">
                                             File Return
                                         </button>
-                                        <button class="btn btn-primary" @onclick="@(() => OnRequestExtension.InvokeAsync(ret.Id))">
+                                        <button type="button" class="btn btn-primary" @onclick="@(() => NavigateToExtensionRequest(ret.Id))">
                                             Request Ext
                                         </button>
                                     }
@@ -152,7 +153,7 @@
 
     <!-- Pagination -->
     <div class="flex justify-center items-center gap-2 px-6 py-6 border-t border-neutral-200 bg-neutral-50">
-        <button class="px-4 py-2 bg-white border border-neutral-300 rounded text-sm cursor-pointer transition-colors hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed" disabled="@(CurrentPage <= 1)" @onclick="@(() => OnPrevPage.InvokeAsync(null))">
+        <button type="button" class="px-4 py-2 bg-white border border-neutral-300 rounded text-sm cursor-pointer transition-colors hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed" disabled="@(CurrentPage <= 1)" @onclick="@(() => OnPrevPage.InvokeAsync(null))">
             ← Previous
         </button>
 
@@ -168,7 +169,7 @@
             }
         </div>
 
-        <button class="px-4 py-2 bg-white border border-neutral-300 rounded text-sm cursor-pointer transition-colors hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed" disabled="@(CurrentPage >= TotalPages)" @onclick="@(() => OnNextPage.InvokeAsync(null))">
+        <button type="button" class="px-4 py-2 bg-white border border-neutral-300 rounded text-sm cursor-pointer transition-colors hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed" disabled="@(CurrentPage >= TotalPages)" @onclick="@(() => OnNextPage.InvokeAsync(null))">
             Next →
         </button>
     </div>
@@ -201,9 +202,6 @@
     public EventCallback<int> OnGoToPage { get; set; }
 
     [Parameter]
-    public EventCallback<string> OnRequestExtension { get; set; }
-
-    [Parameter]
     public EventCallback<string> OnViewReturn { get; set; }
 
     [Parameter]
@@ -230,4 +228,9 @@
         ReturnStatus.Deferred => "badge-deferred",
         _ => "badge-default"
     };
+
+    private void NavigateToExtensionRequest(string returnId)
+    {
+        NavigationManager.NavigateTo($"/extension-request/{returnId}");
+    }
 }

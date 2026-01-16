@@ -1,0 +1,213 @@
+@using System.Collections.Generic
+@using blazor_wasm_ui.Models
+
+<div class="bg-white rounded-lg border border-neutral-200 shadow-sm mb-6">
+    <div class="px-6 py-4 border-b border-neutral-200">
+        <h2 class="text-lg text-neutral-900">Sub-Fund Information</h2>
+        <p class="text-sm text-neutral-600 mt-1">
+            Select extension type for each sub-fund that requires an extension.
+        </p>
+    </div>
+    <div class="p-6">
+        <div class="overflow-x-auto">
+            <table class="w-full border border-neutral-200 rounded-lg">
+                <thead>
+                    <tr class="bg-neutral-50">
+                        <th class="text-left py-3 px-4 text-sm text-neutral-700 border-b border-neutral-200">Sub-Fund Name</th>
+                        <th class="text-left py-3 px-4 text-sm text-neutral-700 border-b border-neutral-200">Extension Type</th>
+                        @if (HasWaiverExtensions)
+                        {
+                            <th class="text-left py-3 px-4 text-sm text-neutral-700 border-b border-neutral-200">Waiver Reason</th>
+                        }
+                        <th class="text-left py-3 px-4 text-sm text-neutral-700 border-b border-neutral-200">Current Due Date</th>
+                        <th class="text-left py-3 px-4 text-sm text-neutral-700 border-b border-neutral-200">Requested Due Date</th>
+                        <th class="text-left py-3 px-4 text-sm text-neutral-700 border-b border-neutral-200">Extensions Used</th>
+                        <th class="text-left py-3 px-4 text-sm text-neutral-700 border-b border-neutral-200 w-16"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var subFund in SubFunds)
+                    {
+                        <tr class="border-b border-neutral-100 hover:bg-neutral-50">
+                            <td class="py-4 px-4">
+                                <div class="text-sm text-neutral-900">@subFund.Name</div>
+                                <div class="text-xs text-neutral-500 mt-1">
+                                    Entity ID: @subFund.EntityId.PadLeft(6, '0')
+                                </div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <select @onchange="(e) => OnSubFundExtensionChange(subFund.Id, e)" class="w-32 h-8 text-xs border border-neutral-300 rounded">
+                                    <option value="none">No Extension</option>
+                                    @if ((90 - subFund.UsedExtensionDays) >= 30)
+                                    {
+                                        <option value="1-month">1 Month</option>
+                                    }
+                                    @if ((90 - subFund.UsedExtensionDays) >= 60)
+                                    {
+                                        <option value="2-month">2 Months</option>
+                                    }
+                                    @if ((90 - subFund.UsedExtensionDays) >= 90)
+                                    {
+                                        <option value="3-month">3 Months</option>
+                                    }
+                                    <option value="waiver">Request Waiver</option>
+                                    <option value="deferral">Deferral</option>
+                                </select>
+                            </td>
+                            @if (HasWaiverExtensions)
+                            {
+                                <td class="py-4 px-4">
+                                    @if (subFund.ExtensionType == "waiver")
+                                    {
+                                        <select @onchange="(e) => OnSubFundWaiverReasonChange(subFund.Id, e)" class="w-36 h-8 text-xs border border-neutral-300 rounded">
+                                            <option value="">Select reason...</option>
+                                            <option value="exceptional-circumstances">Exceptional Circumstances</option>
+                                            <option value="fund-dissolving-merger">Fund dissolving by way of merger within 6 mths of last audit y/e</option>
+                                            <option value="fund-not-launched-deregistered">Fund has not launched and does not wish to be deregistered</option>
+                                            <option value="fund-launched-deregistered">Fund launched and wishes to be deregistered</option>
+                                            <option value="fund-insufficient-capital">Fund launched but has not raised sufficient capital for sustainability</option>
+                                            <option value="fund-transferring-jurisdiction">Fund Transferring to another jurisdiction within 6 mths of last audited y/e</option>
+                                            <option value="fund-unable-audited-accounts">Fund unable to obtain audited accounts (see Regulatory policy for details)</option>
+                                            <option value="fund-voluntarily-liquidated">Fund voluntarily liquidated and a 3rd party liquidator covers unaudited period</option>
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-sm text-neutral-400">-</div>
+                                    }
+                                </td>
+                            }
+                            <td class="py-4 px-4">
+                                <div class="text-sm text-neutral-900">@subFund.CurrentFilingDate</div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <div class="@(subFund.ExtensionType != null && subFund.ExtensionType != "none" ? "text-sm text-neutral-900" : "text-sm text-neutral-400")">
+                                    @(subFund.ExtensionType != null && subFund.ExtensionType != "none" ? GetNewFilingDate(subFund.ExtensionType) : "No change")
+                                </div>
+                            </td>
+                            <td class="py-4 px-4">
+                                <div class="text-sm text-neutral-900">@GetUpdatedExtensionsUsed(subFund)/@subFund.MaxExtensions</div>
+                                <div class="text-xs text-neutral-500">
+                                    @(GetUpdatedExtensionsUsed(subFund) == 0 ? "First request" : "Previous extensions")
+                                </div>
+                            </td>
+                            <td class="py-4 px-2 w-min">
+                                <button @onclick="() => OnRemoveSubFund(subFund.Id)" class="flex items-center justify-center w-6 h-6 rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-neutral-600" title="Remove sub-fund from request">
+                                    ×
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+        @if (AvailableSubFunds.Count > 0)
+        {
+            <div class="mt-6 pt-4 border-t border-neutral-200">
+                <div class="mb-4">
+                    <label class="text-sm text-neutral-700 mb-2 block">Add Additional Sub-Fund</label>
+                    <p class="text-xs text-neutral-500 mb-3">
+                        Select a sub-fund from your fund complex to add to this extension request.
+                    </p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <select @onchange="OnAddSubFund" class="w-64 h-8 text-xs border border-neutral-300 rounded">
+                        <option value="">Select sub-fund to add...</option>
+                        @foreach (var subFund in AvailableSubFunds)
+                        {
+                            <option value="@subFund.Id">@subFund.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<SubFund> SubFunds { get; set; } = new();
+
+    [Parameter]
+    public List<SubFund> AvailableSubFunds { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<(string subFundId, string extensionType)> OnExtensionChange { get; set; }
+
+    [Parameter]
+    public EventCallback<(string subFundId, string waiverReason)> OnWaiverReasonChange { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnAddSubFundCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnRemoveSubFundCallback { get; set; }
+
+    private bool HasWaiverExtensions => SubFunds.Any(sf => sf.ExtensionType == "waiver");
+
+    private string GetNewFilingDate(string extensionType)
+    {
+        var baseDate = new DateTime(2025, 3, 31);
+        switch (extensionType)
+        {
+            case "1-month":
+                return baseDate.AddMonths(1).ToString("MMMM d, yyyy");
+            case "2-month":
+                return baseDate.AddMonths(2).ToString("MMMM d, yyyy");
+            case "3-month":
+                return baseDate.AddMonths(3).ToString("MMMM d, yyyy");
+            case "waiver":
+                return "Waiver under review";
+            case "deferral":
+                return baseDate.AddMonths(6).ToString("MMMM d, yyyy");
+            default:
+                return "Select extension type to view new date";
+        }
+    }
+
+    private int GetExtensionsToUse(string extensionType)
+    {
+        return extensionType switch
+        {
+            "1-month" => 1,
+            "2-month" => 2,
+            "3-month" => 3,
+            "waiver" => 0,
+            "deferral" => 1,
+            _ => 0
+        };
+    }
+
+    private int GetUpdatedExtensionsUsed(SubFund subFund)
+    {
+        if (string.IsNullOrEmpty(subFund.ExtensionType)) return subFund.ExtensionsUsed;
+        return subFund.ExtensionsUsed + GetExtensionsToUse(subFund.ExtensionType);
+    }
+
+    private async Task OnSubFundExtensionChange(string subFundId, ChangeEventArgs e)
+    {
+        var extensionType = e.Value?.ToString() ?? "";
+        await OnExtensionChange.InvokeAsync((subFundId, extensionType));
+    }
+
+    private async Task OnSubFundWaiverReasonChange(string subFundId, ChangeEventArgs e)
+    {
+        var waiverReason = e.Value?.ToString() ?? "";
+        await OnWaiverReasonChange.InvokeAsync((subFundId, waiverReason));
+    }
+
+    private async Task OnAddSubFund(ChangeEventArgs e)
+    {
+        var subFundId = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(subFundId))
+        {
+            await OnAddSubFundCallback.InvokeAsync(subFundId);
+        }
+    }
+
+    private async Task OnRemoveSubFund(string subFundId)
+    {
+        await OnRemoveSubFundCallback.InvokeAsync(subFundId);
+    }
+}

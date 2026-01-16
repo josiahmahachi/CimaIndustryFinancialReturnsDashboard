@@ -1,12 +1,52 @@
 @page "/under-construction"
 
-<PageTitle>Under Construction</PageTitle>
+<PageTitle>@GetPageTitle()</PageTitle>
 
 <div class="under-construction-container">
     <div class="under-construction-content">
-        <h1>🚧 Page Under Construction</h1>
-        <p>This page is currently being developed.</p>
+        <h1>🚧 @GetFeatureName() - Under Construction</h1>
+        <p>@GetDescription()</p>
+        <p>This feature is currently being developed.</p>
         <p>Please check back soon or return to the dashboard.</p>
-        <a href="/" class="back-link">← Back to Dashboard</a>
+        <a href="/filings" class="back-link">← Back to Filings</a>
     </div>
 </div>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "menu")]
+    public string Menu { get; set; } = "unknown";
+
+    private string GetFeatureName()
+    {
+        return Menu switch
+        {
+            "requests" => "Requests",
+            "applications" => "Applications", 
+            "user-management" => "User Management",
+            "settings" => "Settings",
+            "documentation" => "Documentation",
+            "support" => "Support",
+            _ => "Feature"
+        };
+    }
+
+    private string GetDescription()
+    {
+        return Menu switch
+        {
+            "requests" => "Manage and track your extension and unlock requests.",
+            "applications" => "View and manage submitted applications.",
+            "user-management" => "Manage user accounts and permissions.",
+            "settings" => "Configure system settings and preferences.",
+            "documentation" => "Access user guides and API documentation.",
+            "support" => "Get help and contact support.",
+            _ => "This feature is coming soon."
+        };
+    }
+
+    private string GetPageTitle()
+    {
+        return $"{GetFeatureName()} - Under Construction";
+    }
+}

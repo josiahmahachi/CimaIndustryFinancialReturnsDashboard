@@ -175,7 +175,11 @@
   }
 
   #blazor-error-ui {
-    @apply fixed bottom-0 left-0 w-full z-[1000] bg-yellow-100 px-5 py-2.5 shadow-md;
+    @apply fixed bottom-0 left-0 w-full z-[1000] bg-yellow-100 px-5 py-2.5 shadow-md hidden;
+  }
+
+  #blazor-error-ui.show {
+    display: block;
   }
 
   #blazor-error-ui .dismiss {

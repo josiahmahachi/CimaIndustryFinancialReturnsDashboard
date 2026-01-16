@@ -669,6 +669,7 @@ footer {
   bottom: 0;
   left: 0;
   z-index: 1000;
+  display: none;
   width: 100%;
   --tw-bg-opacity: 1;
   background-color: rgb(254 249 195 / var(--tw-bg-opacity, 1));

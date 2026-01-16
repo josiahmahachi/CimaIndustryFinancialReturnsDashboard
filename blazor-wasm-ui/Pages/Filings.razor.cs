@@ -252,12 +252,6 @@ public partial class Filings : ComponentBase
 
     // Action callbacks (to be implemented in future tickets)
 
-    private void OnRequestExtension(string returnId)
-    {
-        // TODO: Implement extension request workflow (Ticket 4)
-        Console.WriteLine($"Request extension for return: {returnId}");
-    }
-
     private void OnViewReturn(string returnId)
     {
         // TODO: Implement view return details (Ticket 4+)
