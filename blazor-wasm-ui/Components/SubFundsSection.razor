@@ -37,21 +37,10 @@
                             </td>
                             <td class="py-4 px-4">
                                 <select @onchange="(e) => OnSubFundExtensionChange(subFund.Id, e)" class="w-32 h-8 text-xs border border-neutral-300 rounded">
-                                    <option value="none">No Extension</option>
-                                    @if ((90 - subFund.UsedExtensionDays) >= 30)
+                                    @foreach (var extType in GetAvailableExtensionTypes(subFund))
                                     {
-                                        <option value="1-month">1 Month</option>
+                                        <option value="@extType">@GetExtensionTypeLabel(extType)</option>
                                     }
-                                    @if ((90 - subFund.UsedExtensionDays) >= 60)
-                                    {
-                                        <option value="2-month">2 Months</option>
-                                    }
-                                    @if ((90 - subFund.UsedExtensionDays) >= 90)
-                                    {
-                                        <option value="3-month">3 Months</option>
-                                    }
-                                    <option value="waiver">Request Waiver</option>
-                                    <option value="deferral">Deferral</option>
                                 </select>
                             </td>
                             @if (HasWaiverExtensions)
@@ -61,14 +50,10 @@
                                     {
                                         <select @onchange="(e) => OnSubFundWaiverReasonChange(subFund.Id, e)" class="w-36 h-8 text-xs border border-neutral-300 rounded">
                                             <option value="">Select reason...</option>
-                                            <option value="exceptional-circumstances">Exceptional Circumstances</option>
-                                            <option value="fund-dissolving-merger">Fund dissolving by way of merger within 6 mths of last audit y/e</option>
-                                            <option value="fund-not-launched-deregistered">Fund has not launched and does not wish to be deregistered</option>
-                                            <option value="fund-launched-deregistered">Fund launched and wishes to be deregistered</option>
-                                            <option value="fund-insufficient-capital">Fund launched but has not raised sufficient capital for sustainability</option>
-                                            <option value="fund-transferring-jurisdiction">Fund Transferring to another jurisdiction within 6 mths of last audited y/e</option>
-                                            <option value="fund-unable-audited-accounts">Fund unable to obtain audited accounts (see Regulatory policy for details)</option>
-                                            <option value="fund-voluntarily-liquidated">Fund voluntarily liquidated and a 3rd party liquidator covers unaudited period</option>
+                                            @foreach (var waiverReason in ConfigurationService.WaiverReasons)
+                                            {
+                                                <option value="@waiverReason.Key">@waiverReason.Value.Label</option>
+                                            }
                                         </select>
                                     }
                                     else
@@ -124,90 +109,3 @@
         }
     </div>
 </div>
-
-@code {
-    [Parameter]
-    public List<SubFund> SubFunds { get; set; } = new();
-
-    [Parameter]
-    public List<SubFund> AvailableSubFunds { get; set; } = new();
-
-    [Parameter]
-    public EventCallback<(string subFundId, string extensionType)> OnExtensionChange { get; set; }
-
-    [Parameter]
-    public EventCallback<(string subFundId, string waiverReason)> OnWaiverReasonChange { get; set; }
-
-    [Parameter]
-    public EventCallback<string> OnAddSubFundCallback { get; set; }
-
-    [Parameter]
-    public EventCallback<string> OnRemoveSubFundCallback { get; set; }
-
-    private bool HasWaiverExtensions => SubFunds.Any(sf => sf.ExtensionType == "waiver");
-
-    private string GetNewFilingDate(string extensionType)
-    {
-        var baseDate = new DateTime(2025, 3, 31);
-        switch (extensionType)
-        {
-            case "1-month":
-                return baseDate.AddMonths(1).ToString("MMMM d, yyyy");
-            case "2-month":
-                return baseDate.AddMonths(2).ToString("MMMM d, yyyy");
-            case "3-month":
-                return baseDate.AddMonths(3).ToString("MMMM d, yyyy");
-            case "waiver":
-                return "Waiver under review";
-            case "deferral":
-                return baseDate.AddMonths(6).ToString("MMMM d, yyyy");
-            default:
-                return "Select extension type to view new date";
-        }
-    }
-
-    private int GetExtensionsToUse(string extensionType)
-    {
-        return extensionType switch
-        {
-            "1-month" => 1,
-            "2-month" => 2,
-            "3-month" => 3,
-            "waiver" => 0,
-            "deferral" => 1,
-            _ => 0
-        };
-    }
-
-    private int GetUpdatedExtensionsUsed(SubFund subFund)
-    {
-        if (string.IsNullOrEmpty(subFund.ExtensionType)) return subFund.ExtensionsUsed;
-        return subFund.ExtensionsUsed + GetExtensionsToUse(subFund.ExtensionType);
-    }
-
-    private async Task OnSubFundExtensionChange(string subFundId, ChangeEventArgs e)
-    {
-        var extensionType = e.Value?.ToString() ?? "";
-        await OnExtensionChange.InvokeAsync((subFundId, extensionType));
-    }
-
-    private async Task OnSubFundWaiverReasonChange(string subFundId, ChangeEventArgs e)
-    {
-        var waiverReason = e.Value?.ToString() ?? "";
-        await OnWaiverReasonChange.InvokeAsync((subFundId, waiverReason));
-    }
-
-    private async Task OnAddSubFund(ChangeEventArgs e)
-    {
-        var subFundId = e.Value?.ToString();
-        if (!string.IsNullOrEmpty(subFundId))
-        {
-            await OnAddSubFundCallback.InvokeAsync(subFundId);
-        }
-    }
-
-    private async Task OnRemoveSubFund(string subFundId)
-    {
-        await OnRemoveSubFundCallback.InvokeAsync(subFundId);
-    }
-}

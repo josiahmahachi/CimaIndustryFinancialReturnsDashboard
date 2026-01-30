@@ -1,58 +1,97 @@
 @using System.Collections.Generic
+@using System.Linq
 
-<div class="progress-indicator mb-6">
-    <div class="flex items-center justify-between">
-        @foreach (var step in Steps)
-        {
-            var isActive = step.Number == CurrentStep;
-            var isCompleted = step.Number < CurrentStep;
+@* ProgressIndicator.razor *@
+<div class="mb-8">
+    <div class="relative">
+        @* Connecting line background *@
+        <div class="absolute top-4 left-4 right-4 h-px bg-neutral-300 z-0"></div>
 
-            <div class="flex items-center flex-1">
-                <div class="@GetStepIndicatorClass(isActive, isCompleted) mr-3">
-                    @if (isCompleted)
-                    {
-                        <span>✓</span>
-                    }
-                    else
-                    {
-                        <span>@step.Number</span>
-                    }
+        @* Progress line (completed portion) *@
+        <div class="absolute top-4 left-4 h-px bg-teal-600 z-0 transition-all duration-300"
+             style="width:@ProgressLineWidth">
+        </div>
+
+        @* Steps container *@  
+        <div class="relative flex justify-between z-10">
+            @foreach (var step in DisplaySteps)
+            {
+                <div class="flex flex-col items-center" @key="step.Number">
+                    @* Step circle *@
+                    <div class="@GetCircleClass(step.Number)">
+                        @step.Number
+                    </div>
+
+                    @* Step label *@
+                    <span class="@GetLabelClass(step.Number)">
+                        @step.Label
+                    </span>
                 </div>
-                <span class="text-sm font-medium">
-                    @step.Label
-                </span>
-                @if (step.Number < Steps.Count)
-                {
-                    <div class="flex-1 h-1 bg-neutral-300 mx-4"></div>
-                }
-            </div>
-        }
+            }
+        </div>
     </div>
 </div>
 
 @code {
-    [Parameter]
-    public int CurrentStep { get; set; } = 1;
+    [Parameter] public int CurrentStep { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public List<StepItem> Steps { get; set; } = new();
 
-    [Parameter]
-    public bool SkipPayment { get; set; } = false;
+    [Parameter] public bool SkipPayment { get; set; } = false;
 
-    public class StepItem
+    private IReadOnlyList<StepItem> DisplaySteps => BuildDisplaySteps();
+
+    private int AdjustedCurrentStep
+        => SkipPayment && CurrentStep > 1 ? CurrentStep - 1 : CurrentStep;
+
+    private string ProgressLineWidth
     {
-        public int Number { get; set; }
-        public string Label { get; set; } = "";
+        get
+        {
+            var steps = DisplaySteps;
+            if (steps.Count <= 1) return "0%";
+
+            // ((adjustedCurrentStep - 1) / (stepsCount - 1)) * 100
+            var ratio = (AdjustedCurrentStep - 1) / (double)(steps.Count - 1);
+            ratio = Math.Clamp(ratio, 0, 1);
+
+            return $"calc({ratio * 100:0.####}% - 2rem)";
+        }
     }
 
-    private string GetStepIndicatorClass(bool isActive, bool isCompleted)
+    private IReadOnlyList<StepItem> BuildDisplaySteps()
     {
-        var baseClass = "w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm";
-        if (isCompleted)
-            return baseClass + " bg-green-500 text-white";
-        if (isActive)
-            return baseClass + " bg-blue-500 text-white";
-        return baseClass + " bg-neutral-300 text-neutral-700";
+        var source = Steps?.ToList() ?? new List<StepItem>();
+
+        if (!SkipPayment)
+            return source.OrderBy(s => s.Number).ToList();
+
+        // Filter out Payment and renumber sequentially
+        var filtered = source
+            .Where(s => !string.Equals(s.Label, "Payment", StringComparison.OrdinalIgnoreCase))
+            .OrderBy(s => s.Number)
+            .Select((s, index) => s with { Number = index + 1 })
+            .ToList();
+
+        return filtered;
     }
+
+    private string GetCircleClass(int stepNumber)
+    {
+        var baseClass = "flex items-center justify-center w-8 h-8 rounded-full text-sm border-2 transition-all duration-300 ";
+        return AdjustedCurrentStep >= stepNumber
+            ? baseClass + "bg-teal-600 border-teal-600 text-white"
+            : baseClass + "bg-neutral-300 border-neutral-300 text-neutral-600";
+    }
+
+    private string GetLabelClass(int stepNumber)
+    {
+        var baseClass = "mt-2 text-sm text-center transition-all duration-300 ";
+        return AdjustedCurrentStep >= stepNumber
+            ? baseClass + "text-neutral-900"
+            : baseClass + "text-neutral-600";
+    }
+
+    public record StepItem(int Number, string Label);
 }

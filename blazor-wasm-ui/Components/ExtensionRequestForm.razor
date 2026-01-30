@@ -116,9 +116,9 @@
 
     private List<ProgressIndicator.StepItem> Steps = new()
     {
-        new() { Number = 1, Label = "Request Details" },
-        new() { Number = 2, Label = "Payment" },
-        new() { Number = 3, Label = "Confirmation" }
+        new(1, "Request Details"),
+        new(2, "Payment"),
+        new(3, "Confirmation")
     };
 
     protected override void OnInitialized()
