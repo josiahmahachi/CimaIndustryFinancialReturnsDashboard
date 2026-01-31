@@ -84,3 +84,14 @@ public enum WaiverReason
     FundUnableAuditedAccounts,
     FundVoluntarilyLiquidated
 }
+
+/// <summary>
+/// Payment method options for extension requests.
+/// </summary>
+public enum PaymentMethod
+{
+    Card,
+    WireTransfer,
+    BankTransfer,
+    Escrow
+}

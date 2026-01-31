@@ -14,6 +14,16 @@ public interface IConfigurationService
     decimal BaseExtensionFeePerMonth { get; }
 
     /// <summary>
+    /// Gets the processing fee for extension requests.
+    /// </summary>
+    decimal ProcessingFee { get; }
+
+    /// <summary>
+    /// Gets the bank charges for wire transfers.
+    /// </summary>
+    decimal WireTransferBankCharges { get; }
+
+    /// <summary>
     /// Gets the maximum number of extensions allowed per fund.
     /// </summary>
     int MaxExtensionsPerFund { get; }

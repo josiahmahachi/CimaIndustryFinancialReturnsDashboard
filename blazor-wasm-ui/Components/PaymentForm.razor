@@ -1,0 +1,380 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using blazor_wasm_ui.Models
+@using blazor_wasm_ui.Services
+
+<section class="payment-form-section">
+    <!-- Error Message -->
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm mb-6">
+            <strong>Error:</strong> @errorMessage
+        </div>
+    }
+
+    <!-- Skip Payment for Deferral -->
+    @if (ShouldSkipPayment())
+    {
+        <div class="p-6 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm mb-6">
+            <div class="flex items-center space-x-2 mb-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="font-medium">Deferral Selected</span>
+            </div>
+            <p>Deferral requests do not require payment. Click Continue to proceed to confirmation.</p>
+        </div>
+    }
+    else
+    {
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Form -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Payment Method Selection -->
+                <div class="bg-white border border-neutral-200 rounded-lg">
+                    <div class="px-6 py-4 border-b border-neutral-200">
+                        <h2 class="text-lg font-medium text-neutral-900">Payment Method</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @foreach (var method in Enum.GetValues<PaymentMethod>())
+                            {
+                                <div class="@GetPaymentMethodClass(method) cursor-pointer"
+                                     @onclick="() => OnPaymentMethodChanged(method)">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-5 h-5 rounded-full border-2 @GetRadioClass(method)"></div>
+                                        <div>
+                                            <div class="text-sm font-medium text-neutral-900">@GetPaymentMethodLabel(method)</div>
+                                            <div class="text-xs text-neutral-500">@GetPaymentMethodDescription(method)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Payment Form -->
+                @if (paymentData.PaymentMethod == PaymentMethod.Card)
+                {
+                    <div class="bg-white border border-neutral-200 rounded-lg">
+                        <div class="px-6 py-4 border-b border-neutral-200">
+                            <h2 class="text-lg font-medium text-neutral-900">Card Details</h2>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-neutral-700 mb-1">Card Number *</label>
+                                    <input type="text"
+                                           @bind="FormattedCardNumber"
+                                           placeholder="1234 5678 9012 3456"
+                                           class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-neutral-700 mb-1">Expiry Date *</label>
+                                    <input type="text"
+                                           @bind="FormattedExpiryDate"
+                                           placeholder="MM/YY"
+                                           class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500" />
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-neutral-700 mb-1">CVV *</label>
+                                    <input type="text"
+                                           @bind="paymentData.Cvv"
+                                           placeholder="123"
+                                           maxlength="4"
+                                           class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-neutral-700 mb-1">Cardholder Name *</label>
+                                    <input type="text"
+                                           @bind="paymentData.CardholderName"
+                                           placeholder="John Smith"
+                                           class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500" />
+                                </div>
+                            </div>
+                            <div class="border-t border-neutral-200 pt-4">
+                                <h3 class="text-sm font-medium text-neutral-900 mb-3">Billing Address</h3>
+                                <div class="space-y-3">
+                                    <input type="text"
+                                           @bind="paymentData.BillingStreet"
+                                           placeholder="Street Address"
+                                           class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500" />
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <input type="text"
+                                               @bind="paymentData.BillingCity"
+                                               placeholder="City"
+                                               class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500" />
+                                        <input type="text"
+                                               @bind="paymentData.BillingPostalCode"
+                                               placeholder="Postal Code"
+                                               class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500" />
+                                    </div>
+                                    <input type="text"
+                                           @bind="paymentData.BillingCountry"
+                                           readonly
+                                           class="w-full px-3 py-2 border border-neutral-300 rounded-md bg-neutral-50 text-neutral-500" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Wire/Bank Transfer -->
+                @if (paymentData.PaymentMethod == PaymentMethod.WireTransfer || paymentData.PaymentMethod == PaymentMethod.BankTransfer)
+                {
+                    <div class="bg-white border border-neutral-200 rounded-lg">
+                        <div class="px-6 py-4 border-b border-neutral-200">
+                            <h2 class="text-lg font-medium text-neutral-900">Transfer Instructions</h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="bg-neutral-50 rounded-lg p-4 mb-4">
+                                <h3 class="text-sm font-medium text-neutral-900 mb-3">Bank Details</h3>
+                                <div class="space-y-2 text-sm">
+                                    <div><span class="text-neutral-700">Bank:</span> <span class="text-neutral-900">Butterfield Bank (Cayman) Limited</span></div>
+                                    <div><span class="text-neutral-700">Account Name:</span> <span class="text-neutral-900">Cayman Islands Monetary Authority</span></div>
+                                    <div><span class="text-neutral-700">Account Number:</span> <span class="text-neutral-900">123456789</span></div>
+                                    <div><span class="text-neutral-700">SWIFT Code:</span> <span class="text-neutral-900">BUKI KY K2</span></div>
+                                    <div><span class="text-neutral-700">Reference:</span> <span class="text-neutral-900">EXT-2024-@ReturnData.Id.PadLeft(6, '0')</span></div>
+                                </div>
+                            </div>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                <div class="flex items-start space-x-2">
+                                    <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <div class="text-sm text-yellow-800">
+                                        <p class="font-medium mb-1">Upload Payment Receipt</p>
+                                        <p>Please upload a copy of your payment receipt after completing the transfer.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Escrow Payment -->
+                @if (paymentData.PaymentMethod == PaymentMethod.Escrow)
+                {
+                    <div class="bg-white border border-neutral-200 rounded-lg">
+                        <div class="px-6 py-4 border-b border-neutral-200">
+                            <h2 class="text-lg font-medium text-neutral-900">Escrow Account Details</h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="bg-neutral-50 rounded-lg p-4 mb-4">
+                                <div class="space-y-3 text-sm">
+                                    <div><span class="text-neutral-700">Escrow Provider:</span> <span class="text-neutral-900">Cayman Escrow Services Ltd.</span></div>
+                                    <div><span class="text-neutral-700">Escrow Account Number:</span> <span class="text-neutral-900">4567 8901 2345 6789</span></div>
+                                    <div><span class="text-neutral-700">Contact Email:</span> <span class="text-neutral-900">payments@caymanescrow.com</span></div>
+                                    <div><span class="text-neutral-700">Available Balance:</span> <span class="text-green-700">$25,480.00</span></div>
+                                    <div><span class="text-neutral-700">Reference:</span> <span class="text-neutral-900">EXT-2024-@ReturnData.Id.PadLeft(6, '0')</span></div>
+                                </div>
+                            </div>
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                <div class="text-sm text-green-800">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="font-medium">Sufficient Funds Available</span>
+                                    </div>
+                                    <p>Your escrow provider will be notified of the payment request and funds will be released to CIMA upon successful processing.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Terms and Conditions -->
+                <div class="bg-white border border-neutral-200 rounded-lg">
+                    <div class="p-6">
+                        <div class="flex items-start space-x-3">
+                            <input type="checkbox"
+                                   id="terms"
+                                   @bind="paymentData.TermsAccepted"
+                                   class="mt-1 h-4 w-4 text-neutral-900 focus:ring-neutral-500 border-neutral-300 rounded" />
+                            <div class="text-sm">
+                                <label for="terms" class="text-neutral-700 cursor-pointer">
+                                    I agree to the <a href="https://www.cima.ky/privacy-policy" target="_blank" class="text-neutral-900 underline hover:no-underline">Privacy Policy</a>.
+                                    I understand that extension fees are non-refundable once processed.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white border border-neutral-200 rounded-lg mb-6">
+                    <div class="px-6 py-4 border-b border-neutral-200">
+                        <h3 class="text-lg font-medium text-neutral-900">Order Summary</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-3">
+                            @if (paymentData.ExtensionFee > 0)
+                            {
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-neutral-700">Extension Fee</span>
+                                    <span class="text-neutral-900">@FormatCurrency(paymentData.ExtensionFee)</span>
+                                </div>
+                            }
+                            @if (paymentData.ProcessingFee > 0)
+                            {
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-neutral-700">Processing Fee</span>
+                                    <span class="text-neutral-900">@FormatCurrency(paymentData.ProcessingFee)</span>
+                                </div>
+                            }
+                            @if (paymentData.BankCharges > 0)
+                            {
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-neutral-700">Bank Charges</span>
+                                    <span class="text-neutral-900">@FormatCurrency(paymentData.BankCharges)</span>
+                                </div>
+                            }
+                            <div class="border-t border-neutral-200 pt-3">
+                                <div class="flex justify-between text-lg font-medium">
+                                    <span class="text-neutral-900">Total</span>
+                                    <span class="text-neutral-900">@FormatCurrency(paymentData.TotalAmount)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Request Summary -->
+                <div class="bg-white border border-neutral-200 rounded-lg mb-6">
+                    <div class="px-6 py-4 border-b border-neutral-200">
+                        <h3 class="text-lg font-medium text-neutral-900">Request Summary</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div>
+                                <div class="text-sm text-neutral-700">Fund Name</div>
+                                <div class="text-sm text-neutral-900">@ReturnData.FundName</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-neutral-700">Return ID</div>
+                                <div class="text-sm text-neutral-900">RET-2024-@ReturnData.Id.PadLeft(6, '0')</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-neutral-700">Reporting Period</div>
+                                <div class="text-sm text-neutral-900">@FormatPeriod(ReturnData.Period)</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-neutral-700">Current Due Date</div>
+                                <div class="text-sm text-neutral-900">@ReturnData.DueDate</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Notice -->
+                <div class="bg-white border border-neutral-200 rounded-lg">
+                    <div class="p-6">
+                        <div class="text-center">
+                            <svg class="w-8 h-8 text-neutral-400 mb-3 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <h3 class="text-sm font-medium text-neutral-900 mb-2">Secure Payment</h3>
+                            <p class="text-xs text-neutral-600">
+                                Your payment information is encrypted and secure. We use industry-standard security measures to protect your data.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Action Buttons -->
+    <div class="flex justify-between items-center mt-8 pt-6 border-t border-neutral-200">
+        <button type="button"
+                @onclick="OnBack"
+                class="px-6 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500">
+            Back
+        </button>
+        <button type="button"
+                @onclick="HandleSubmit"
+                disabled="@(isProcessing || (!ShouldSkipPayment() && !paymentData.TermsAccepted))"
+                class="px-8 py-2 text-sm font-medium text-white bg-neutral-900 border border-transparent rounded-md hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500 disabled:bg-neutral-400 disabled:cursor-not-allowed">
+            @if (isProcessing)
+            {
+                <span>Processing Payment...</span>
+            }
+            else if (ShouldSkipPayment())
+            {
+                <span>Continue to Confirmation</span>
+            }
+            else
+            {
+                <span>Pay @FormatCurrency(paymentData.TotalAmount)</span>
+            }
+        </button>
+    </div>
+</section>
+
+@code {
+    private string GetPaymentMethodClass(PaymentMethod method)
+    {
+        return paymentData.PaymentMethod == method
+            ? "border-2 border-neutral-900 bg-neutral-50 rounded-lg p-4"
+            : "border-2 border-neutral-200 hover:border-neutral-300 rounded-lg p-4";
+    }
+
+    private string GetRadioClass(PaymentMethod method)
+    {
+        return paymentData.PaymentMethod == method
+            ? "border-neutral-900 bg-neutral-900"
+            : "border-neutral-300";
+    }
+
+    private string GetPaymentMethodDescription(PaymentMethod method)
+    {
+        return method switch
+        {
+            PaymentMethod.Card => "Credit/Debit Card",
+            PaymentMethod.WireTransfer => "International Wire Transfer",
+            PaymentMethod.BankTransfer => "Local Bank Transfer",
+            PaymentMethod.Escrow => "Secure escrow payment",
+            _ => ""
+        };
+    }
+
+    private string FormatPeriod(string period)
+    {
+        if (period.Contains("Annual"))
+        {
+            var year = period.Split(' ').Last();
+            return $"Jan - Dec {year}";
+        }
+        if (period.Contains("Q1"))
+        {
+            var year = period.Split(' ').Last();
+            return $"Jan - Mar {year}";
+        }
+        if (period.Contains("Q2"))
+        {
+            var year = period.Split(' ').Last();
+            return $"Apr - Jun {year}";
+        }
+        if (period.Contains("Q3"))
+        {
+            var year = period.Split(' ').Last();
+            return $"Jul - Sep {year}";
+        }
+        if (period.Contains("Q4"))
+        {
+            var year = period.Split(' ').Last();
+            return $"Oct - Dec {year}";
+        }
+        return period;
+    }
+
+    private bool ShouldSkipPayment()
+    {
+        return ExtensionType == "deferral";
+    }
+}

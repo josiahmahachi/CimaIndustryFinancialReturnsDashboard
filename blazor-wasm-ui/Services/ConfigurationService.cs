@@ -12,6 +12,10 @@ public class ConfigurationService : IConfigurationService
 
     public decimal BaseExtensionFeePerMonth => 625m;
 
+    public decimal ProcessingFee => 25m;
+
+    public decimal WireTransferBankCharges => 6.15m;
+
     public int MaxExtensionsPerFund => 3;
 
     public int MaxExtensionDaysPerFund => 90;
