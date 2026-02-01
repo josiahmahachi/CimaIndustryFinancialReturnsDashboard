@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Web;
 using blazor_wasm_ui.Models;
 using blazor_wasm_ui.Services;
 
@@ -61,6 +62,14 @@ public partial class DocumentUpload : ComponentBase
     private string? LiquidatorReportError { get; set; }
     private string? OtherDocumentsError { get; set; }
 
+    // Drag states for visual feedback
+    private bool CoverLetterDragOver { get; set; }
+    private bool AuditorLetterDragOver { get; set; }
+    private bool OperatorAffidavitDragOver { get; set; }
+    private bool AdministratorLetterDragOver { get; set; }
+    private bool LiquidatorReportDragOver { get; set; }
+    private bool OtherDocumentsDragOver { get; set; }
+
     // General state
     private string? ErrorMessage { get; set; }
     private string AdditionalComments { get; set; } = string.Empty;
@@ -105,6 +114,153 @@ public partial class DocumentUpload : ComponentBase
 
         ErrorMessage = null;
         ClearAllErrors();
+    }
+
+    /// <summary>
+    /// Handles drag over event for visual feedback.
+    /// </summary>
+    private void HandleDragOver(DragEventArgs e, string fieldName)
+    {
+        SetDragState(fieldName, true);
+    }
+
+    /// <summary>
+    /// Handles drag leave event for visual feedback.
+    /// </summary>
+    private void HandleDragLeave(DragEventArgs e, string fieldName)
+    {
+        SetDragState(fieldName, false);
+    }
+
+    /// <summary>
+    /// Handles file drop event.
+    /// </summary>
+    private async Task HandleDropAsync(DragEventArgs e, string fieldName)
+    {
+        SetDragState(fieldName, false);
+
+        // TODO: Implement file drop handling with JS interop
+        // For now, drag-drop provides visual feedback only
+        // Users can click to select files
+    }
+
+    /// <summary>
+    /// Handles drag over event for Cover Letter.
+    /// </summary>
+    private void HandleCoverLetterDragOver(DragEventArgs e) => HandleDragOver(e, "coverLetter");
+
+    /// <summary>
+    /// Handles drag leave event for Cover Letter.
+    /// </summary>
+    private void HandleCoverLetterDragLeave(DragEventArgs e) => HandleDragLeave(e, "coverLetter");
+
+    /// <summary>
+    /// Handles drop event for Cover Letter.
+    /// </summary>
+    private async Task HandleCoverLetterDrop(DragEventArgs e) => await HandleDropAsync(e, "coverLetter");
+
+    /// <summary>
+    /// Handles drag over event for Auditor Letter.
+    /// </summary>
+    private void HandleAuditorLetterDragOver(DragEventArgs e) => HandleDragOver(e, "auditorLetter");
+
+    /// <summary>
+    /// Handles drag leave event for Auditor Letter.
+    /// </summary>
+    private void HandleAuditorLetterDragLeave(DragEventArgs e) => HandleDragLeave(e, "auditorLetter");
+
+    /// <summary>
+    /// Handles drag over event for Operator Affidavit.
+    /// </summary>
+    private void HandleOperatorAffidavitDragOver(DragEventArgs e) => HandleDragOver(e, "operatorAffidavit");
+
+    /// <summary>
+    /// Handles drop event for Auditor Letter.
+    /// </summary>
+    private async Task HandleAuditorLetterDrop(DragEventArgs e) => await HandleDropAsync(e, "auditorLetter");
+
+    /// <summary>
+    /// Handles drag leave event for Operator Affidavit.
+    /// </summary>
+    private void HandleOperatorAffidavitDragLeave(DragEventArgs e) => HandleDragLeave(e, "operatorAffidavit");
+
+    /// <summary>
+    /// Handles drop event for Operator Affidavit.
+    /// </summary>
+    private async Task HandleOperatorAffidavitDrop(DragEventArgs e) => await HandleDropAsync(e, "operatorAffidavit");
+
+    /// <summary>
+    /// Handles drag over event for Liquidator Report.
+    /// </summary>
+    private void HandleLiquidatorReportDragOver(DragEventArgs e) => HandleDragOver(e, "liquidatorReport");
+
+    /// <summary>
+    /// Handles drag leave event for Liquidator Report.
+    /// </summary>
+    private void HandleLiquidatorReportDragLeave(DragEventArgs e) => HandleDragLeave(e, "liquidatorReport");
+
+    /// <summary>
+    /// Handles drop event for Liquidator Report.
+    /// </summary>
+    private async Task HandleLiquidatorReportDrop(DragEventArgs e) => await HandleDropAsync(e, "liquidatorReport");
+
+    /// <summary>
+    /// Handles drag over event for Administrator Letter.
+    /// </summary>
+    private void HandleAdministratorLetterDragOver(DragEventArgs e) => HandleDragOver(e, "administratorLetter");
+
+    /// <summary>
+    /// Handles drag leave event for Administrator Letter.
+    /// </summary>
+    private void HandleAdministratorLetterDragLeave(DragEventArgs e) => HandleDragLeave(e, "administratorLetter");
+
+    /// <summary>
+    /// Handles drop event for Administrator Letter.
+    /// </summary>
+    private async Task HandleAdministratorLetterDrop(DragEventArgs e) => await HandleDropAsync(e, "administratorLetter");
+
+    /// <summary>
+    /// Handles drag over event for Other Documents.
+    /// </summary>
+    private void HandleOtherDocumentsDragOver(DragEventArgs e) => HandleDragOver(e, "otherDocuments");
+
+    /// <summary>
+    /// Handles drag leave event for Other Documents.
+    /// </summary>
+    private void HandleOtherDocumentsDragLeave(DragEventArgs e) => HandleDragLeave(e, "otherDocuments");
+
+    /// <summary>
+    /// Handles drop event for Other Documents.
+    /// </summary>
+    private async Task HandleOtherDocumentsDrop(DragEventArgs e) => await HandleDropAsync(e, "otherDocuments");
+
+    /// <summary>
+    /// Sets drag state for a specific field.
+    /// </summary>
+    private void SetDragState(string fieldName, bool isDragOver)
+    {
+        switch (fieldName)
+        {
+            case "coverLetter":
+                CoverLetterDragOver = isDragOver;
+                break;
+            case "auditorLetter":
+                AuditorLetterDragOver = isDragOver;
+                break;
+            case "operatorAffidavit":
+                OperatorAffidavitDragOver = isDragOver;
+                break;
+            case "administratorLetter":
+                AdministratorLetterDragOver = isDragOver;
+                break;
+            case "liquidatorReport":
+                LiquidatorReportDragOver = isDragOver;
+                break;
+            case "otherDocuments":
+                OtherDocumentsDragOver = isDragOver;
+                break;
+        }
+        StateHasChanged();
     }
 
     /// <summary>
@@ -430,6 +586,62 @@ public partial class DocumentUpload : ComponentBase
         if (bytes < 1024) return $"{bytes} B";
         if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
         return $"{bytes / (1024.0 * 1024):F1} MB";
+    }
+
+    /// <summary>
+    /// Gets the CSS class for drag state styling.
+    /// </summary>
+    private string GetDragClass(string fieldName)
+    {
+        var isDragOver = GetDragState(fieldName);
+        var hasFile = GetFile(fieldName) != null;
+
+        if (isDragOver)
+        {
+            return "border-neutral-500 bg-neutral-50";
+        }
+        else if (hasFile)
+        {
+            return "border-green-300 bg-green-50";
+        }
+        else
+        {
+            return "border-neutral-300 bg-neutral-50 hover:bg-neutral-100";
+        }
+    }
+
+    /// <summary>
+    /// Gets drag state for a specific field.
+    /// </summary>
+    private bool GetDragState(string fieldName)
+    {
+        return fieldName switch
+        {
+            "coverLetter" => CoverLetterDragOver,
+            "auditorLetter" => AuditorLetterDragOver,
+            "operatorAffidavit" => OperatorAffidavitDragOver,
+            "administratorLetter" => AdministratorLetterDragOver,
+            "liquidatorReport" => LiquidatorReportDragOver,
+            "otherDocuments" => OtherDocumentsDragOver,
+            _ => false
+        };
+    }
+
+    /// <summary>
+    /// Gets file for a specific field.
+    /// </summary>
+    private IBrowserFile? GetFile(string fieldName)
+    {
+        return fieldName switch
+        {
+            "coverLetter" => CoverLetter,
+            "auditorLetter" => AuditorLetter,
+            "operatorAffidavit" => OperatorAffidavit,
+            "administratorLetter" => AdministratorLetter,
+            "liquidatorReport" => LiquidatorReport,
+            "otherDocuments" => OtherDocuments,
+            _ => null
+        };
     }
 
     /// <summary>

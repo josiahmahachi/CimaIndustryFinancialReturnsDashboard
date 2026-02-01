@@ -1,6 +1,9 @@
 @* Returns Table - Data Grid with Pagination *@
 @using blazor_wasm_ui.Models
-@inject NavigationManager NavigationManager
+@using blazor_wasm_ui.Services
+@inject NavigationService NavigationService
+@inject FormStateService FormStateService
+@inject IReturnsDataService ReturnsDataService
 
 <section class="bg-white border border-neutral-200 rounded overflow-hidden mb-8 shadow-sm">
     <table class="w-full border-collapse text-sm">
@@ -100,7 +103,7 @@
                                 {
                                     @if (ret.Status == ReturnStatus.Outstanding)
                                     {
-                                        <button type="button" class="btn btn-danger" @onclick="@(() => OnRequestUnlock.InvokeAsync(ret.Id))">
+                                        <button type="button" class="btn btn-danger" @onclick="@(() => NavigateToUnlockRequest(ret.Id))">
                                             Unlock
                                         </button>
                                         <button type="button" class="btn btn-primary" @onclick="@(() => NavigateToExtensionRequest(ret.Id))">
@@ -118,7 +121,7 @@
                                 {
                                     @if (ret.Status == ReturnStatus.Outstanding)
                                     {
-                                        <button type="button" class="btn btn-danger" @onclick="@(() => OnRequestUnlock.InvokeAsync(ret.Id))">
+                                        <button type="button" class="btn btn-danger" @onclick="@(() => NavigateToUnlockRequest(ret.Id))">
                                             Unlock
                                         </button>
                                         <button type="button" class="btn btn-primary" @onclick="@(() => NavigateToExtensionRequest(ret.Id))">
@@ -229,8 +232,23 @@
         _ => "badge-default"
     };
 
-    private void NavigateToExtensionRequest(string returnId)
+    private async Task NavigateToExtensionRequest(string returnId)
     {
-        NavigationManager.NavigateTo($"/extension-request/{returnId}");
+        var returnData = await ReturnsDataService.GetReturnByIdAsync(returnId);
+        if (returnData != null)
+        {
+            FormStateService.StartExtensionRequest(returnData);
+            NavigationService.NavigateToExtensionRequest(returnId);
+        }
+    }
+
+    private async Task NavigateToUnlockRequest(string returnId)
+    {
+        var returnData = await ReturnsDataService.GetReturnByIdAsync(returnId);
+        if (returnData != null)
+        {
+            FormStateService.StartUnlockRequest(returnData);
+            NavigationService.NavigateToUnlockRequest(returnId);
+        }
     }
 }

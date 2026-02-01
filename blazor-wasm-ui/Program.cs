@@ -12,5 +12,7 @@ builder.Services.AddScoped<IReturnsDataService, ReturnsDataService>();
 builder.Services.AddScoped<IFileValidationService, FileValidationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddSingleton<IConfigurationService, ConfigurationService>();
+builder.Services.AddScoped<NavigationService>();
+builder.Services.AddScoped<FormStateService>();
 
 await builder.Build().RunAsync();

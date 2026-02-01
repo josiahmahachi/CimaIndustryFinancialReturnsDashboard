@@ -1,7 +1,8 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using blazor_wasm_ui.Models
 @using blazor_wasm_ui.Components
-@inject NavigationManager NavigationManager
+@using blazor_wasm_ui.Services
+@inject NavigationService NavigationService
 
 @if (ReturnData != null)
 {
@@ -380,6 +381,6 @@
 
     private void HandleBreadcrumbBack()
     {
-        NavigationManager.NavigateTo("/filings");
+        NavigationService.NavigateToDashboard();
     }
 }

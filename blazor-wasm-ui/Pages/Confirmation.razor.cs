@@ -17,7 +17,7 @@ public partial class Confirmation : ComponentBase
     private IReturnsDataService ReturnsDataService { get; set; } = null!;
 
     [Inject]
-    private NavigationManager NavigationManager { get; set; } = null!;
+    private NavigationService NavigationService { get; set; } = null!;
 
     private FinancialReturn? ReturnData;
     private string ExtensionType = string.Empty;
@@ -157,12 +157,12 @@ public partial class Confirmation : ComponentBase
 
     private void HandleBackToDashboard()
     {
-        NavigationManager.NavigateTo("/filings");
+        NavigationService.NavigateToDashboard();
     }
 
     private void HandleBreadcrumbBack()
     {
-        NavigationManager.NavigateTo("/filings");
+        NavigationService.NavigateToDashboard();
     }
 
     private string GetPaymentStatusClass()

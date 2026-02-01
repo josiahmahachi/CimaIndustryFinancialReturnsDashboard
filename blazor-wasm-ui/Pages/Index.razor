@@ -1,10 +1,11 @@
 @page "/"
 @using Microsoft.AspNetCore.Components
-@inject NavigationManager Navigation
+@using blazor_wasm_ui.Services
+@inject NavigationService Navigation
 
 @code {
     protected override void OnInitialized()
     {
-        Navigation.NavigateTo("/filings", replace: true);
+        Navigation.NavigateToDashboard();
     }
 }

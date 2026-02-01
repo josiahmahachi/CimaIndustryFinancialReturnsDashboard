@@ -11,7 +11,7 @@ public partial class Payment : ComponentBase
     public string Id { get; set; } = string.Empty;
 
     [Inject]
-    private NavigationManager NavigationManager { get; set; } = null!;
+    private NavigationService NavigationService { get; set; } = null!;
 
     [Inject]
     private IReturnsDataService ReturnsDataService { get; set; } = null!;
@@ -77,23 +77,23 @@ public partial class Payment : ComponentBase
 
     private void HandleBack()
     {
-        NavigationManager.NavigateTo("/filings");
+        NavigationService.NavigateToDashboard();
     }
 
     private void HandleBackToRequest()
     {
-        NavigationManager.NavigateTo($"/extension-request/{Id}");
+        NavigationService.NavigateToExtensionRequest(Id);
     }
 
     private void HandleContinueToConfirmation(PaymentData paymentData)
     {
         // TODO: In a real implementation, pass the payment data to the confirmation page
         // For now, navigate to confirmation
-        NavigationManager.NavigateTo($"/confirmation/{Id}");
+        NavigationService.NavigateToConfirmation();
     }
 
     private void HandleBreadcrumbBack()
     {
-        NavigationManager.NavigateTo("/filings");
+        NavigationService.NavigateToDashboard();
     }
 }

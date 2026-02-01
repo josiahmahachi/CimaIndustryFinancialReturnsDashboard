@@ -8,7 +8,10 @@ public partial class ExtensionRequest : ComponentBase
     public string Id { get; set; }
 
     [Inject]
-    private NavigationManager NavigationManager { get; set; }
+    private NavigationService NavigationService { get; set; }
+
+    [Inject]
+    private FormStateService FormStateService { get; set; }
 
     [Inject]
     private IReturnsDataService ReturnsDataService { get; set; }
@@ -35,16 +38,16 @@ public partial class ExtensionRequest : ComponentBase
 
     private void HandleBack()
     {
-        NavigationManager.NavigateTo("/filings");
+        NavigationService.NavigateToFilings();
     }
 
     private void HandleContinue(ExtensionRequestData requestData)
     {
-        // Store Step 1 data for potential use in later tickets
-        Step1Data = requestData;
+        // Store Step 1 data in FormStateService
+        FormStateService.ExtensionRequestData = requestData;
+        FormStateService.AdvanceExtensionStep();
 
-        // For now, navigate to payment page with the return ID
-        // In Ticket 5, this will pass the data to the payment component
-        NavigationManager.NavigateTo($"/payment/{Id}");
+        // Navigate to payment page
+        NavigationService.NavigateToPayment();
     }
 }

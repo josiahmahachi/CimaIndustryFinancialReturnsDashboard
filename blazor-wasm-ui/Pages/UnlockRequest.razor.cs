@@ -12,7 +12,7 @@ public partial class UnlockRequest : ComponentBase
     public string? Id { get; set; }
 
     [Inject]
-    public NavigationManager NavigationManager { get; set; } = default!;
+    public NavigationService NavigationService { get; set; } = default!;
 
     [Inject]
     public IReturnsDataService ReturnsDataService { get; set; } = default!;
@@ -58,7 +58,7 @@ public partial class UnlockRequest : ComponentBase
     {
         if (string.IsNullOrEmpty(Id))
         {
-            NavigationManager.NavigateTo("/");
+            NavigationService.NavigateToDashboard();
             return;
         }
 
@@ -71,7 +71,7 @@ public partial class UnlockRequest : ComponentBase
         catch (Exception)
         {
             // Handle error - return not found
-            NavigationManager.NavigateTo("/");
+            NavigationService.NavigateToDashboard();
         }
     }
 
@@ -86,7 +86,7 @@ public partial class UnlockRequest : ComponentBase
 
     public void HandleBack()
     {
-        NavigationManager.NavigateTo("/");
+        NavigationService.NavigateToDashboard();
     }
 
     public void HandleBreadcrumbClick(Breadcrumb.BreadcrumbItem item)
@@ -159,7 +159,12 @@ public partial class UnlockRequest : ComponentBase
             ReferenceNumber = $"UNL-{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
             // Navigate to confirmation page
-            NavigationManager.NavigateTo($"/unlock-confirmation/{Id}?ref={ReferenceNumber}&reason={Uri.EscapeDataString(GetUnlockReasonLabel())}&justification={Uri.EscapeDataString(UnlockJustification ?? "")}&comments={Uri.EscapeDataString(AdditionalComments ?? "")}");
+            NavigationService.NavigateToUnlockConfirmation(
+                Id!,
+                ReferenceNumber,
+                GetUnlockReasonLabel(),
+                UnlockJustification ?? "",
+                AdditionalComments ?? "");
         }
         catch (Exception)
         {

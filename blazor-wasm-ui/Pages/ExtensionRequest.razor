@@ -2,7 +2,7 @@
 @using blazor_wasm_ui.Models
 @using blazor_wasm_ui.Services
 @using blazor_wasm_ui.Components
-@inject NavigationManager NavigationManager
+@inject NavigationService NavigationService
 @inject IReturnsDataService ReturnsDataService
 
 <div class="w-full min-h-screen bg-neutral-50">
@@ -58,13 +58,13 @@
 
     private void HandleBack()
     {
-        NavigationManager.NavigateTo("/filings");
+        NavigationService.NavigateToFilings();
     }
 
     private void HandleContinue(ExtensionRequestData requestData)
     {
         // TODO: Store the extension request data (in session, local storage, or service)
         // For now, navigate to payment page with the return ID
-        NavigationManager.NavigateTo($"/payment/{Id}");
+        NavigationService.NavigateToPayment(Id);
     }
 }
