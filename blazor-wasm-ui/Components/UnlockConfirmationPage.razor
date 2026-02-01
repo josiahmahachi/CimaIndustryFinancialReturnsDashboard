@@ -1,0 +1,292 @@
+@using blazor_wasm_ui.Models
+@inject NavigationManager NavigationManager
+
+<div class="bg-neutral-50 min-h-screen">
+    <!-- Header -->
+    <div class="bg-blue-600">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="text-white">
+                        <h1 class="text-lg text-white">Financial Authority Portal</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="text-white text-sm">John Smith</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-50">
+            <div class="max-w-7xl mx-auto px-6 py-6">
+                <!-- Back Button -->
+                <button @onclick="HandleBackToDashboard" class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    <span>Back to Dashboard</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Success Message -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl text-gray-900 mb-2">Unlock Request Submitted Successfully!</h1>
+            <p class="text-gray-600">
+                Your unlock request has been received and will be reviewed by the authority. You will receive
+                an email confirmation shortly with the updated filing status.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column - Request Details -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Request Confirmation -->
+                <div class="bg-white border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg text-gray-900">Request Confirmation</h2>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Reference Number</p>
+                                <p class="text-gray-900">@ReferenceNumber</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Submitted On</p>
+                                <p class="text-gray-900">@SubmittedDate</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Fund Name</p>
+                                <p class="text-gray-900">@ReturnData?.FundName</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Fund Type</p>
+                                <p class="text-gray-900">@(ReturnData?.FundType == FundType.MutualFund ? "Mutual Fund" : ReturnData?.FundType == FundType.PrivateFund ? "Private Fund" : "N/A")</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Return ID</p>
+                                <p class="text-gray-900">RET-2024-@ReturnData?.Id.PadLeft(6, '0')</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Fund Structure</p>
+                                <p class="text-gray-900">@(ReturnData?.FundType == FundType.PrivateFund ? "N/A" : ReturnData?.FundStructure?.ToString() ?? "N/A")</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Reporting Period</p>
+                                <p class="text-gray-900">@ReturnData?.PeriodDescription</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Original Due Date</p>
+                                <p class="text-gray-900">@ReturnData?.DueDateDescription</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Status</p>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Submitted
+                                </span>
+                            </div>
+                            <div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unlock Details -->
+                <div class="bg-white border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg text-gray-900">Unlock Details</h2>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <p class="text-sm text-gray-600 mb-1">Unlock Reason</p>
+                            <p class="text-gray-900">@UnlockReason</p>
+                        </div>
+                        @if (!string.IsNullOrEmpty(UnlockJustification))
+                        {
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Unlock Justification</p>
+                                <p class="text-gray-900">@UnlockJustification</p>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(AdditionalComments))
+                        {
+                            <div>
+                                <p class="text-sm text-gray-600 mb-1">Additional Comments</p>
+                                <p class="text-gray-900">@AdditionalComments</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Next Steps -->
+                <div class="bg-white border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg text-gray-900">Next Steps</h2>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex gap-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-sm text-gray-600">
+                                1
+                            </div>
+                            <div>
+                                <p class="text-gray-900 mb-1">Email Confirmation</p>
+                                <p class="text-sm text-gray-600">
+                                    You will receive an email confirmation within 30 minutes with your updated filing status.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-sm text-gray-600">
+                                2
+                            </div>
+                            <div>
+                                <p class="text-gray-900 mb-1">Final Approval</p>
+                                <p class="text-sm text-gray-600">
+                                    Once approved, your filing row will be officially unlocked in the system.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-between gap-4">
+                    <div class="flex gap-4">
+                        <button @onclick="HandleDownloadReceipt" class="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Download Receipt
+                        </button>
+                        <button class="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            View Documents
+                        </button>
+                    </div>
+                    <button @onclick="HandleBackToDashboard" class="flex items-center justify-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-md">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Back to Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column - Important Information -->
+            <div class="lg:col-span-1">
+                <div class="bg-white border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg text-gray-900">Important Information</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div class="flex gap-2">
+                            <svg class="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <p class="text-sm text-gray-600">
+                                New filing dates are provisional until final approval
+                            </p>
+                        </div>
+                        <div class="flex gap-2">
+                            <svg class="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <p class="text-sm text-gray-600">
+                                Keep your reference number for future correspondence
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-gray-200 mt-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg text-gray-900">Need Help?</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-sm text-gray-600 mb-4">
+                            Contact our support team if you have questions about your unlock request.
+                        </p>
+                        <div class="space-y-2">
+                            <p class="text-sm">
+                                <span class="text-gray-600">Contact Support</span>
+                            </p>
+                            <p class="text-sm text-gray-900">
+                                support@@cima.ky | +1 (345) 949-7089
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    [Parameter]
+    public string? ReferenceNumber { get; set; }
+
+    [Parameter]
+    public string? UnlockReason { get; set; }
+
+    [Parameter]
+    public string? UnlockJustification { get; set; }
+
+    [Parameter]
+    public string? AdditionalComments { get; set; }
+
+    public FinancialReturn? ReturnData { get; set; }
+    public string SubmittedDate { get; set; } = DateTime.Now.ToString("MMMM d, yyyy 'at' h:mm tt");
+
+    protected override async Task OnInitializedAsync()
+    {
+        // In a real implementation, this would fetch the return data
+        // For now, we'll create a mock return based on the ID
+        if (!string.IsNullOrEmpty(Id))
+        {
+            // Mock data - in real app this would come from service
+            ReturnData = new FinancialReturn
+            {
+                Id = Id,
+                FundName = "Sample Fund",
+                FundType = FundType.MutualFund,
+                FundStructure = FundStructure.SingleFund,
+                Period = "Q4 2024",
+                PeriodDescription = "Oct 1 - Dec 31, 2024",
+                DueDate = "March 31, 2025",
+                DueDateDescription = "5 days remaining"
+            };
+        }
+    }
+
+    private void HandleBackToDashboard()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void HandleDownloadReceipt()
+    {
+        // In a real implementation, this would trigger a download
+        // For now, just show an alert
+        // You could use JS interop to trigger a download
+    }
+}

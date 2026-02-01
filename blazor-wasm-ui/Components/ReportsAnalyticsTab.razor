@@ -1,0 +1,224 @@
+@using System.Globalization
+@using blazor_wasm_ui.Components.UI
+
+<div class="space-y-6">
+    <!-- Key Metrics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+            <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle class="text-sm">Total Requests</CardTitle>
+                <div class="p-3 bg-blue-50 rounded-full">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <div class="text-2xl">103</div>
+                <p class="text-xs text-green-600 mt-1">+15% from last quarter</p>
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle class="text-sm">Approval Rate</CardTitle>
+                <div class="p-3 bg-green-50 rounded-full">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <div class="text-2xl">87.4%</div>
+                <p class="text-xs text-green-600 mt-1">+2.1% from last quarter</p>
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle class="text-sm">Avg. Processing Time</CardTitle>
+                <div class="p-3 bg-yellow-50 rounded-full">
+                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <div class="text-2xl">4.2 days</div>
+                <p class="text-xs text-green-600 mt-1">-0.3 days from last quarter</p>
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle class="text-sm">Active Funds</CardTitle>
+                <div class="p-3 bg-purple-50 rounded-full">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <div class="text-2xl">28</div>
+                <p class="text-xs text-blue-600 mt-1">3 new funds this quarter</p>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Bar Chart -->
+        <Card>
+            <CardHeader>
+                <CardTitle>Extension Requests by Month</CardTitle>
+                <CardDescription>
+                    Monthly breakdown of extension requests and their outcomes
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div class="h-64">
+                    <SimpleBarChart />
+                </div>
+            </CardContent>
+        </Card>
+
+        <!-- Pie Chart -->
+        <Card>
+            <CardHeader>
+                <CardTitle>Request Status Distribution</CardTitle>
+                <CardDescription>
+                    Overall distribution of extension request outcomes
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div class="h-64 flex items-center justify-center">
+                    <SimplePieChart />
+                </div>
+            </CardContent>
+        </Card>
+    </div>
+
+    <!-- Available Reports -->
+    <Card>
+        <CardHeader>
+            <CardTitle>Available Reports</CardTitle>
+            <CardDescription>
+                Download detailed reports and analytics for your extension activities
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div class="space-y-4">
+                @foreach (var report in GetAvailableReports())
+                {
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <div class="p-2 bg-gray-100 rounded-lg">
+                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900">@report.Title</h4>
+                                <p class="text-xs text-gray-500">@report.Type • Generated @report.GeneratedDate.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <Badge Variant="@GetStatusBadgeVariant(report.Status)">
+                                @report.Status
+                            </Badge>
+                            <Button
+                                Variant="secondary"
+                                Size="sm"
+                                Disabled="@(report.Status != "Available")"
+                                OnClick="() => DownloadReport(report.Id)">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Download
+                            </Button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </CardContent>
+    </Card>
+
+    <!-- Generate Custom Report -->
+    <Card>
+        <CardHeader>
+            <CardTitle>Generate Custom Report</CardTitle>
+            <CardDescription>
+                Create a customized report based on specific date ranges and criteria
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div class="flex items-center justify-between">
+                <p class="text-sm text-gray-600">
+                    Need a specific report for your records? Generate a custom report with your preferred date range and filter criteria.
+                </p>
+                <Button OnClick="GenerateCustomReport">
+                    Generate Report
+                </Button>
+            </div>
+        </CardContent>
+    </Card>
+</div>
+
+@code {
+    private class ReportData
+    {
+        public string Id { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Type { get; set; } = "";
+        public DateTime GeneratedDate { get; set; }
+        public string Status { get; set; } = "";
+    }
+
+    private List<ReportData> GetAvailableReports()
+    {
+        return new List<ReportData>
+        {
+            new ReportData
+            {
+                Id = "RPT-2024-001",
+                Title = "Q4 2024 Extension Summary Report",
+                Type = "Quarterly Summary",
+                GeneratedDate = new DateTime(2024, 12, 15),
+                Status = "Available"
+            },
+            new ReportData
+            {
+                Id = "RPT-2024-002",
+                Title = "November 2024 Processing Analytics",
+                Type = "Monthly Analytics",
+                GeneratedDate = new DateTime(2024, 12, 1),
+                Status = "Available"
+            },
+            new ReportData
+            {
+                Id = "RPT-2024-003",
+                Title = "Year-End Extension Activity Report",
+                Type = "Annual Report",
+                GeneratedDate = new DateTime(2024, 12, 31),
+                Status = "Generating"
+            }
+        };
+    }
+
+    private string GetStatusBadgeVariant(string status)
+    {
+        return status == "Available" ? "default" : "secondary";
+    }
+
+    private void DownloadReport(string reportId)
+    {
+        // Placeholder for download functionality
+        Console.WriteLine($"Downloading report: {reportId}");
+    }
+
+    private void GenerateCustomReport()
+    {
+        // Placeholder for custom report generation
+        Console.WriteLine("Generating custom report");
+    }
+}

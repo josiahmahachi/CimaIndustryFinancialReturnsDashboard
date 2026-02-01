@@ -1,0 +1,133 @@
+@page "/ui-demo"
+@inject NavigationManager NavigationManager
+@using blazor_wasm_ui.Components.UI
+
+<PageTitle>UI Components Demo</PageTitle>
+
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">UI Components Demo</h1>
+            <p class="mt-2 text-gray-600">Showcase of all reusable UI components</p>
+        </div>
+
+        <div class="space-y-8">
+            <!-- Buttons -->
+            <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Buttons</h2>
+                <div class="flex flex-wrap gap-4">
+                    <Button>Default</Button>
+                    <Button Variant="destructive">Destructive</Button>
+                    <Button Variant="outline">Outline</Button>
+                    <Button Variant="secondary">Secondary</Button>
+                    <Button Variant="ghost">Ghost</Button>
+                    <Button Variant="link">Link</Button>
+                    <Button Size="sm">Small</Button>
+                    <Button Size="lg">Large</Button>
+                    <Button Disabled="true">Disabled</Button>
+                </div>
+            </div>
+
+            <!-- Badges -->
+            <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Badges</h2>
+                <div class="flex flex-wrap gap-4">
+                    <Badge>Default</Badge>
+                    <Badge Variant="secondary">Secondary</Badge>
+                    <Badge Variant="destructive">Destructive</Badge>
+                    <Badge Variant="outline">Outline</Badge>
+                </div>
+            </div>
+
+            <!-- Cards -->
+            <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Cards</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Card Title</CardTitle>
+                            <CardDescription>This is a card description</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <p>This is the card content.</p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardContent>
+                            <p>Card with only content.</p>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+
+            <!-- Form Elements -->
+            <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Form Elements</h2>
+                <div class="space-y-4">
+                    <div>
+                        <Label>Input Field</Label>
+                        <Input Placeholder="Enter some text" />
+                    </div>
+                    <div>
+                        <Label>Textarea</Label>
+                        <Textarea Placeholder="Enter longer text" Rows="3" />
+                    </div>
+                    <div>
+                        <Label>Select</Label>
+                        <Select>
+                            <option value="">Choose an option</option>
+                            <option value="option1">Option 1</option>
+                            <option value="option2">Option 2</option>
+                            <option value="option3">Option 3</option>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label>Checkbox</Label>
+                        <Checkbox Label="Check this box" />
+                    </div>
+                    <div>
+                        <Label>Radio Group</Label>
+                        <RadioGroup>
+                            <RadioGroupItem Value="option1">Option 1</RadioGroupItem>
+                            <RadioGroupItem Value="option2">Option 2</RadioGroupItem>
+                            <RadioGroupItem Value="option3">Option 3</RadioGroupItem>
+                        </RadioGroup>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Table</h2>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell>John Doe</TableCell>
+                            <TableCell>john@example.com</TableCell>
+                            <TableCell><Badge>Active</Badge></TableCell>
+                            <TableCell>
+                                <Button Size="sm" Variant="outline">Edit</Button>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Jane Smith</TableCell>
+                            <TableCell>jane@example.com</TableCell>
+                            <TableCell><Badge Variant="secondary">Inactive</Badge></TableCell>
+                            <TableCell>
+                                <Button Size="sm" Variant="outline">Edit</Button>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </div>
+        </div>
+    </div>
+</div>

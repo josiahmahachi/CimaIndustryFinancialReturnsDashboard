@@ -1,0 +1,11 @@
+@using Microsoft.AspNetCore.Components
+
+<th class="h-12 px-4 text-left align-middle font-medium text-gray-500 [&:has([role=checkbox])]:pr-0 @Class" @attributes="AdditionalAttributes">
+    @ChildContent
+</th>
+
+@code {
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IDictionary<string, object?>? AdditionalAttributes { get; set; }
+}

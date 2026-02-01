@@ -1,0 +1,34 @@
+@page "/unlock-confirmation/{id}"
+@layout MainLayout
+@inject NavigationManager NavigationManager
+@using System.Web
+@using blazor_wasm_ui.Components
+@inherits ComponentBase
+
+<UnlockConfirmationPage
+    Id="@Id"
+    ReferenceNumber="@ReferenceNumber"
+    UnlockReason="@UnlockReason"
+    UnlockJustification="@UnlockJustification"
+    AdditionalComments="@AdditionalComments" />
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+
+    public string? ReferenceNumber { get; set; }
+    public string? UnlockReason { get; set; }
+    public string? UnlockJustification { get; set; }
+    public string? AdditionalComments { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+
+        ReferenceNumber = query["ref"];
+        UnlockReason = query["reason"];
+        UnlockJustification = query["justification"];
+        AdditionalComments = query["comments"];
+    }
+}
