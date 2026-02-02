@@ -1,0 +1,66 @@
+/* Light theme semantic tokens */
+:root {
+  --background: var(--color-neutral-50);
+  --foreground: var(--color-neutral-900);
+
+  --card: #ffffff;
+  --card-foreground: var(--color-neutral-900);
+
+  --popover: #ffffff;
+  --popover-foreground: var(--color-neutral-900);
+
+  --primary: var(--color-neutral-900);
+  --primary-foreground: #ffffff;
+
+  --secondary: var(--color-neutral-100);
+  --secondary-foreground: var(--color-neutral-900);
+
+  --muted: var(--color-neutral-100);
+  --muted-foreground: var(--color-neutral-500);
+
+  --accent: var(--color-neutral-100);
+  --accent-foreground: var(--color-neutral-900);
+
+  --destructive: var(--color-destructive-600);
+  --destructive-foreground: #ffffff;
+
+  --success: var(--color-success-600);
+  --success-foreground: #ffffff;
+
+  --warning: var(--color-warning-500);
+  --warning-foreground: #ffffff;
+
+  --info: var(--color-info-500);
+  --info-foreground: #ffffff;
+
+  --border: var(--color-neutral-200);
+  --input: var(--color-neutral-200);
+  --ring: var(--color-neutral-400);
+
+  /* Sidebar */
+  --sidebar: var(--color-neutral-50);
+  --sidebar-foreground: var(--color-neutral-900);
+  --sidebar-primary: var(--color-neutral-900);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--color-neutral-100);
+  --sidebar-accent-foreground: var(--color-neutral-900);
+  --sidebar-border: var(--color-neutral-200);
+
+  /* Status badges */
+  --status-available: var(--color-neutral-100);
+  --status-available-foreground: var(--color-neutral-600);
+  --status-prepared: var(--color-info-100);
+  --status-prepared-foreground: var(--color-info-800);
+  --status-ready: var(--color-info-100);
+  --status-ready-foreground: var(--color-info-800);
+  --status-processed: var(--color-success-100);
+  --status-processed-foreground: var(--color-success-800);
+  --status-returned: var(--color-warning-100);
+  --status-returned-foreground: var(--color-warning-800);
+  --status-waived: var(--color-purple-100);
+  --status-waived-foreground: var(--color-purple-800);
+  --status-outstanding: var(--color-destructive-100);
+  --status-outstanding-foreground: var(--color-destructive-800);
+  --status-deferred: var(--color-warning-100);
+  --status-deferred-foreground: var(--color-warning-800);
+}

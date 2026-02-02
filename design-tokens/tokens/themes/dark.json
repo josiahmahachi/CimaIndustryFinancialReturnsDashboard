@@ -1,0 +1,65 @@
+{
+  "semantic": {
+    "background": { "value": "{color.neutral.950}" },
+    "foreground": { "value": "{color.neutral.50}" },
+    
+    "card": { "value": "{color.neutral.900}" },
+    "card-foreground": { "value": "{color.neutral.50}" },
+    
+    "popover": { "value": "{color.neutral.900}" },
+    "popover-foreground": { "value": "{color.neutral.50}" },
+    
+    "primary": { "value": "{color.neutral.50}" },
+    "primary-foreground": { "value": "{color.neutral.900}" },
+    
+    "secondary": { "value": "{color.neutral.800}" },
+    "secondary-foreground": { "value": "{color.neutral.50}" },
+    
+    "muted": { "value": "{color.neutral.800}" },
+    "muted-foreground": { "value": "{color.neutral.400}" },
+    
+    "accent": { "value": "{color.neutral.800}" },
+    "accent-foreground": { "value": "{color.neutral.50}" },
+    
+    "destructive": { "value": "{color.destructive.600}" },
+    "destructive-foreground": { "value": "{color.white}" },
+    
+    "success": { "value": "{color.success.600}" },
+    "success-foreground": { "value": "{color.white}" },
+    
+    "warning": { "value": "{color.warning.500}" },
+    "warning-foreground": { "value": "{color.white}" },
+    
+    "info": { "value": "{color.info.500}" },
+    "info-foreground": { "value": "{color.white}" },
+    
+    "border": { "value": "{color.neutral.800}" },
+    "input": { "value": "{color.neutral.800}" },
+    "ring": { "value": "{color.neutral.300}" },
+    
+    "sidebar": { "value": "{color.neutral.900}" },
+    "sidebar-foreground": { "value": "{color.neutral.50}" },
+    "sidebar-primary": { "value": "{color.neutral.50}" },
+    "sidebar-primary-foreground": { "value": "{color.neutral.900}" },
+    "sidebar-accent": { "value": "{color.neutral.800}" },
+    "sidebar-accent-foreground": { "value": "{color.neutral.50}" },
+    "sidebar-border": { "value": "{color.neutral.800}" },
+    
+    "status-available": { "value": "{color.neutral.800}" },
+    "status-available-foreground": { "value": "{color.neutral.300}" },
+    "status-prepared": { "value": "{color.info.900}" },
+    "status-prepared-foreground": { "value": "{color.info.200}" },
+    "status-ready": { "value": "{color.info.900}" },
+    "status-ready-foreground": { "value": "{color.info.200}" },
+    "status-processed": { "value": "{color.success.900}" },
+    "status-processed-foreground": { "value": "{color.success.200}" },
+    "status-returned": { "value": "{color.warning.900}" },
+    "status-returned-foreground": { "value": "{color.warning.200}" },
+    "status-waived": { "value": "#3b0764" },
+    "status-waived-foreground": { "value": "#e9d5ff" },
+    "status-outstanding": { "value": "{color.destructive.900}" },
+    "status-outstanding-foreground": { "value": "{color.destructive.200}" },
+    "status-deferred": { "value": "{color.warning.900}" },
+    "status-deferred-foreground": { "value": "{color.warning.200}" }
+  }
+}

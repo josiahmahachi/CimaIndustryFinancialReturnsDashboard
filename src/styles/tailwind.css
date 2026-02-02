@@ -1,6 +1,10 @@
 /* Tailwind CSS Input File */
 /* Generated Tailwind CSS will be compiled to ./blazor-wasm-ui/wwwroot/css/tailwind.css */
 
+/* Design System Token Imports */
+@import '../../blazor-wasm-ui/wwwroot/css/tokens/core.css';
+@import '../../blazor-wasm-ui/wwwroot/css/tokens/light.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

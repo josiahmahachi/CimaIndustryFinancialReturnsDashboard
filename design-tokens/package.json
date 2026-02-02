@@ -1,0 +1,13 @@
+{
+  "name": "design-tokens",
+  "version": "1.0.0",
+  "description": "Design tokens for Blazor WASM UI",
+  "scripts": {
+    "build": "style-dictionary build --config sd.config.cjs",
+    "clean": "rimraf ../blazor-wasm-ui/wwwroot/css/tokens"
+  },
+  "devDependencies": {
+    "style-dictionary": "^3.9.2",
+    "rimraf": "^5.0.5"
+  }
+}

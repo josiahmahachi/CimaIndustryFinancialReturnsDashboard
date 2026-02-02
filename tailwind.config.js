@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class",
   content: [
     "./blazor-wasm-ui/Pages/**/*.{razor,cs}",
     "./blazor-wasm-ui/Shared/**/*.{razor,cs}",
@@ -8,65 +9,123 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary colors
-        background: "#ffffff",
-        foreground: "oklch(0.145 0 0)",
-        card: "#ffffff",
-        "card-foreground": "oklch(0.145 0 0)",
-        popover: "oklch(1 0 0)",
-        "popover-foreground": "oklch(0.145 0 0)",
-        primary: "#030213",
-        "primary-foreground": "oklch(1 0 0)",
-        secondary: "oklch(0.95 0.0058 264.53)",
-        "secondary-foreground": "#030213",
-        muted: "#ececf0",
-        "muted-foreground": "#717182",
-        accent: "#e9ebef",
-        "accent-foreground": "#030213",
-        destructive: "#d4183d",
-        "destructive-foreground": "#ffffff",
-        border: "rgba(0, 0, 0, 0.1)",
-        input: "transparent",
-        "input-background": "#f3f3f5",
-        "switch-background": "#cbced4",
-        ring: "oklch(0.708 0 0)",
+        // Semantic tokens using CSS variables
+        background: "var(--background)",
+        foreground: "var(--foreground)",
         
-        // Chart colors (for future use with Recharts)
-        "chart-1": "oklch(0.646 0.222 41.116)",
-        "chart-2": "oklch(0.6 0.118 184.704)",
-        "chart-3": "oklch(0.398 0.07 227.392)",
-        "chart-4": "oklch(0.828 0.189 84.429)",
-        "chart-5": "oklch(0.769 0.188 70.08)",
+        card: {
+          DEFAULT: "var(--card)",
+          foreground: "var(--card-foreground)",
+        },
         
-        // Sidebar colors
-        sidebar: "oklch(0.985 0 0)",
-        "sidebar-foreground": "oklch(0.145 0 0)",
-        "sidebar-primary": "#030213",
-        "sidebar-primary-foreground": "oklch(0.985 0 0)",
-        "sidebar-accent": "oklch(0.97 0 0)",
-        "sidebar-accent-foreground": "oklch(0.205 0 0)",
-        "sidebar-border": "oklch(0.922 0 0)",
-        "sidebar-ring": "oklch(0.708 0 0)",
+        popover: {
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
+        },
         
-        // Semantic colors from Tailwind defaults (used in utilities)
-        "neutral-50": "#f9fafb",
-        "neutral-100": "#f3f4f6",
-        "neutral-200": "#e5e7eb",
-        "neutral-300": "#d1d5db",
-        "neutral-400": "#9ca3af",
-        "neutral-600": "#6b7280",
-        "neutral-700": "#374151",
-        "neutral-900": "#111827",
+        primary: {
+          DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)",
+        },
         
-        // Status colors (from current Blazor styles)
-        "status-available": "#10b981",
-        "status-prepared": "#3b82f6",
-        "status-ready": "#8b5cf6",
-        "status-processed": "#059669",
-        "status-returned": "#dc2626",
-        "status-waived": "#6b7280",
-        "status-outstanding": "#ea580c",
-        "status-deferred": "#6366f1",
+        secondary: {
+          DEFAULT: "var(--secondary)",
+          foreground: "var(--secondary-foreground)",
+        },
+        
+        muted: {
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
+        },
+        
+        accent: {
+          DEFAULT: "var(--accent)",
+          foreground: "var(--accent-foreground)",
+        },
+        
+        destructive: {
+          DEFAULT: "var(--destructive)",
+          foreground: "var(--destructive-foreground)",
+        },
+        
+        success: {
+          DEFAULT: "var(--success)",
+          foreground: "var(--success-foreground)",
+        },
+        
+        warning: {
+          DEFAULT: "var(--warning)",
+          foreground: "var(--warning-foreground)",
+        },
+        
+        info: {
+          DEFAULT: "var(--info)",
+          foreground: "var(--info-foreground)",
+        },
+        
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+        
+        // Sidebar
+        sidebar: {
+          DEFAULT: "var(--sidebar)",
+          foreground: "var(--sidebar-foreground)",
+          primary: "var(--sidebar-primary)",
+          "primary-foreground": "var(--sidebar-primary-foreground)",
+          accent: "var(--sidebar-accent)",
+          "accent-foreground": "var(--sidebar-accent-foreground)",
+          border: "var(--sidebar-border)",
+        },
+        
+        // Status badges
+        "status-available": {
+          DEFAULT: "var(--status-available)",
+          foreground: "var(--status-available-foreground)",
+        },
+        "status-prepared": {
+          DEFAULT: "var(--status-prepared)",
+          foreground: "var(--status-prepared-foreground)",
+        },
+        "status-ready": {
+          DEFAULT: "var(--status-ready)",
+          foreground: "var(--status-ready-foreground)",
+        },
+        "status-processed": {
+          DEFAULT: "var(--status-processed)",
+          foreground: "var(--status-processed-foreground)",
+        },
+        "status-returned": {
+          DEFAULT: "var(--status-returned)",
+          foreground: "var(--status-returned-foreground)",
+        },
+        "status-waived": {
+          DEFAULT: "var(--status-waived)",
+          foreground: "var(--status-waived-foreground)",
+        },
+        "status-outstanding": {
+          DEFAULT: "var(--status-outstanding)",
+          foreground: "var(--status-outstanding-foreground)",
+        },
+        "status-deferred": {
+          DEFAULT: "var(--status-deferred)",
+          foreground: "var(--status-deferred-foreground)",
+        },
+        
+        // Neutral scale (for utilities that need specific shades)
+        neutral: {
+          50: "var(--color-neutral-50)",
+          100: "var(--color-neutral-100)",
+          200: "var(--color-neutral-200)",
+          300: "var(--color-neutral-300)",
+          400: "var(--color-neutral-400)",
+          500: "var(--color-neutral-500)",
+          600: "var(--color-neutral-600)",
+          700: "var(--color-neutral-700)",
+          800: "var(--color-neutral-800)",
+          900: "var(--color-neutral-900)",
+          950: "var(--color-neutral-950)",
+        },
       },
       borderRadius: {
         sm: "0.375rem",
