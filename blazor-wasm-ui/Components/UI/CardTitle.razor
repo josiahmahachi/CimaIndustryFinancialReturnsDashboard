@@ -1,8 +1,8 @@
 @using Microsoft.AspNetCore.Components
 
-<h3 class="text-2xl font-semibold leading-none tracking-tight @Class" @attributes="AdditionalAttributes">
+<h4 class="leading-none @Class" @attributes="AdditionalAttributes">
     @ChildContent
-</h3>
+</h4>
 
 @code {
     [Parameter] public string Class { get; set; } = "";

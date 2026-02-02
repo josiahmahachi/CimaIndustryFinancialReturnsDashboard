@@ -109,6 +109,7 @@
   --info-foreground: #ffffff;
   --border: var(--color-neutral-200);
   --input: var(--color-neutral-200);
+  --input-background: #ffffff;
   --ring: var(--color-neutral-400);
   /* Sidebar */
   --sidebar: var(--color-neutral-50);
@@ -1096,16 +1097,17 @@ footer {
   display: grid;
 }
 
+.size-4 {
+  width: 1rem;
+  height: 1rem;
+}
+
 .h-10 {
   height: 2.5rem;
 }
 
 .h-11 {
   height: 2.75rem;
-}
-
-.h-12 {
-  height: 3rem;
 }
 
 .h-16 {
@@ -1156,8 +1158,8 @@ footer {
   height: 100vh;
 }
 
-.min-h-\[80px\] {
-  min-height: 80px;
+.min-h-16 {
+  min-height: 4rem;
 }
 
 .min-h-screen {
@@ -1212,6 +1214,11 @@ footer {
   width: 2rem;
 }
 
+.w-fit {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
 .w-full {
   width: 100%;
 }
@@ -1219,6 +1226,10 @@ footer {
 .w-min {
   width: -moz-min-content;
   width: min-content;
+}
+
+.min-w-0 {
+  min-width: 0;
 }
 
 .max-w-2xl {
@@ -1294,12 +1305,20 @@ footer {
   list-style-type: none;
 }
 
+.auto-rows-min {
+  grid-auto-rows: min-content;
+}
+
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-rows-\[auto_auto\] {
+  grid-template-rows: auto auto;
 }
 
 .flex-row {
@@ -1340,6 +1359,10 @@ footer {
 
 .gap-1 {
   gap: 0.25rem;
+}
+
+.gap-1\.5 {
+  gap: 0.375rem;
 }
 
 .gap-2 {
@@ -1396,12 +1419,6 @@ footer {
   --tw-space-y-reverse: 0;
   margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
-}
-
-.space-y-1\.5 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(0.375rem * var(--tw-space-y-reverse));
 }
 
 .space-y-2 > :not([hidden]) ~ :not([hidden]) {
@@ -1482,6 +1499,10 @@ footer {
   border-radius: 0.5rem;
 }
 
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
 .rounded-t {
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
@@ -1552,6 +1573,10 @@ footer {
   border-color: rgb(134 239 172 / var(--tw-border-opacity, 1));
 }
 
+.border-input {
+  border-color: var(--input);
+}
+
 .border-neutral-100 {
   border-color: var(--color-neutral-100);
 }
@@ -1610,6 +1635,10 @@ footer {
   background-color: rgb(37 99 235 / var(--tw-bg-opacity, 1));
 }
 
+.bg-card {
+  background-color: var(--card);
+}
+
 .bg-destructive {
   background-color: var(--destructive);
 }
@@ -1647,6 +1676,10 @@ footer {
 .bg-green-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(34 197 94 / var(--tw-bg-opacity, 1));
+}
+
+.bg-input-background {
+  background-color: var(--input-background);
 }
 
 .bg-neutral-100 {
@@ -1898,10 +1931,6 @@ footer {
   padding-right: 1.5rem;
 }
 
-.pt-0 {
-  padding-top: 0;
-}
-
 .pt-3 {
   padding-top: 0.75rem;
 }
@@ -1944,6 +1973,11 @@ footer {
   line-height: 2.25rem;
 }
 
+.text-base {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
 .text-lg {
   font-size: 1.125rem;
   line-height: 1.75rem;
@@ -1984,10 +2018,6 @@ footer {
   line-height: 1;
 }
 
-.tracking-tight {
-  letter-spacing: -0.025em;
-}
-
 .tracking-wider {
   letter-spacing: 0.05em;
 }
@@ -2005,6 +2035,10 @@ footer {
 .text-blue-700 {
   --tw-text-opacity: 1;
   color: rgb(29 78 216 / var(--tw-text-opacity, 1));
+}
+
+.text-card-foreground {
+  color: var(--card-foreground);
 }
 
 .text-destructive-foreground {
@@ -2045,11 +2079,6 @@ footer {
   color: rgb(17 24 39 / var(--tw-text-opacity, 1));
 }
 
-.text-gray-950 {
-  --tw-text-opacity: 1;
-  color: rgb(3 7 18 / var(--tw-text-opacity, 1));
-}
-
 .text-green-600 {
   --tw-text-opacity: 1;
   color: rgb(22 163 74 / var(--tw-text-opacity, 1));
@@ -2063,6 +2092,10 @@ footer {
 .text-green-800 {
   --tw-text-opacity: 1;
   color: rgb(22 101 52 / var(--tw-text-opacity, 1));
+}
+
+.text-muted-foreground {
+  color: var(--muted-foreground);
 }
 
 .text-neutral-400 {
@@ -2215,12 +2248,13 @@ footer {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
-.outline {
-  outline-style: solid;
+.outline-none {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
-.ring-offset-white {
-  --tw-ring-offset-color: #fff;
+.outline {
+  outline-style: solid;
 }
 
 .filter {
@@ -2241,6 +2275,12 @@ footer {
 
 .transition-opacity {
   transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-shadow {
+  transition-property: box-shadow;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -2291,6 +2331,14 @@ footer {
    POPOVER & Z-INDEX MANAGEMENT
    ======================================== */
 
+.file\:inline-flex::file-selector-button {
+  display: inline-flex;
+}
+
+.file\:h-7::file-selector-button {
+  height: 1.75rem;
+}
+
 .file\:border-0::file-selector-button {
   border-width: 0px;
 }
@@ -2308,14 +2356,12 @@ footer {
   font-weight: 500;
 }
 
-.placeholder\:text-gray-500::-moz-placeholder {
-  --tw-text-opacity: 1;
-  color: rgb(107 114 128 / var(--tw-text-opacity, 1));
+.placeholder\:text-muted-foreground::-moz-placeholder {
+  color: var(--muted-foreground);
 }
 
-.placeholder\:text-gray-500::placeholder {
-  --tw-text-opacity: 1;
-  color: rgb(107 114 128 / var(--tw-text-opacity, 1));
+.placeholder\:text-muted-foreground::placeholder {
+  color: var(--muted-foreground);
 }
 
 .last\:border-b-0:last-child {
@@ -2340,10 +2386,6 @@ footer {
   background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1));
 }
 
-.hover\:bg-gray-100\/80:hover {
-  background-color: rgb(243 244 246 / 0.8);
-}
-
 .hover\:bg-gray-50:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
@@ -2352,10 +2394,6 @@ footer {
 .hover\:bg-gray-800:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(31 41 55 / var(--tw-bg-opacity, 1));
-}
-
-.hover\:bg-gray-900\/80:hover {
-  background-color: rgb(17 24 39 / 0.8);
 }
 
 .hover\:bg-neutral-100:hover {
@@ -2372,10 +2410,6 @@ footer {
 
 .hover\:bg-neutral-800:hover {
   background-color: var(--color-neutral-800);
-}
-
-.hover\:bg-red-500\/80:hover {
-  background-color: rgb(239 68 68 / 0.8);
 }
 
 .hover\:bg-red-700:hover {
@@ -2472,12 +2506,12 @@ footer {
   --tw-ring-color: var(--color-neutral-900);
 }
 
-.focus\:ring-ring:focus {
-  --tw-ring-color: var(--ring);
-}
-
 .focus\:ring-offset-2:focus {
   --tw-ring-offset-width: 2px;
+}
+
+.focus-visible\:border-ring:focus-visible {
+  border-color: var(--ring);
 }
 
 .focus-visible\:outline-none:focus-visible {
@@ -2491,9 +2525,10 @@ footer {
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 }
 
-.focus-visible\:ring-blue-500:focus-visible {
-  --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity, 1));
+.focus-visible\:ring-\[3px\]:focus-visible {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 }
 
 .focus-visible\:ring-ring:focus-visible {
@@ -2536,9 +2571,24 @@ footer {
   opacity: 0.7;
 }
 
-.data-\[state\=selected\]\:bg-gray-50[data-state="selected"] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1));
+.data-\[checked\=true\]\:border-primary[data-checked="true"] {
+  border-color: var(--primary);
+}
+
+.data-\[checked\=true\]\:bg-primary[data-checked="true"] {
+  background-color: var(--primary);
+}
+
+.data-\[state\=selected\]\:bg-muted[data-state="selected"] {
+  background-color: var(--muted);
+}
+
+.data-\[checked\=true\]\:text-primary-foreground[data-checked="true"] {
+  color: var(--primary-foreground);
+}
+
+.data-\[placeholder\]\:text-muted-foreground[data-placeholder] {
+  color: var(--muted-foreground);
 }
 
 @media (min-width: 640px) {
@@ -2595,6 +2645,10 @@ footer {
 
 .\[\&\:has\(\[role\=checkbox\]\)\]\:pr-0:has([role=checkbox]) {
   padding-right: 0;
+}
+
+.\[\&\:last-child\]\:pb-6:last-child {
+  padding-bottom: 1.5rem;
 }
 
 .\[\&_tr\:last-child\]\:border-0 tr:last-child {

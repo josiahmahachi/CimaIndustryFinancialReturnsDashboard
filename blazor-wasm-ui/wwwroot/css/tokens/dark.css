@@ -35,6 +35,7 @@
 
   --border: var(--color-neutral-800);
   --input: var(--color-neutral-800);
+  --input-background: var(--color-neutral-900);
   --ring: var(--color-neutral-300);
 
   /* Sidebar */
