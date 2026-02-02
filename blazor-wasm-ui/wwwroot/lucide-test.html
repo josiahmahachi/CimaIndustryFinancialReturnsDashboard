@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Lucide Icons Test</title>
+    <style>
+        body {
+            font-family: system-ui;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .icon-test {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .console-output {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .log-line {
+            padding: 2px 0;
+        }
+        .error { color: #d32f2f; }
+        .success { color: #388e3c; }
+        .info { color: #1976d2; }
+    </style>
+</head>
+<body>
+    <h1>Lucide Icons Test</h1>
+
+    <div class="test-section">
+        <h2>Bundle Status</h2>
+        <p id="bundle-status">Loading...</p>
+        <p id="window-check">Checking window.LucideIcons...</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Sample Icons</h2>
+        <div id="icon-container">
+            <div class="icon-test">
+                <i data-lucide="home"></i>
+                <br>home
+            </div>
+            <div class="icon-test">
+                <i data-lucide="send"></i>
+                <br>send
+            </div>
+            <div class="icon-test">
+                <i data-lucide="settings"></i>
+                <br>settings
+            </div>
+            <div class="icon-test">
+                <i data-lucide="users"></i>
+                <br>users
+            </div>
+            <div class="icon-test">
+                <i data-lucide="menu"></i>
+                <br>menu
+            </div>
+        </div>
+        <button onclick="manualReinit()">Manual Re-initialize Icons</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Console Output</h2>
+        <div class="console-output" id="console-output"></div>
+    </div>
+
+    <script src="js/lucide.bundle.js"></script>
+    <script>
+        const consoleOutput = document.getElementById('console-output');
+        const originalLog = console.log;
+        const originalError = console.error;
+
+        // Capture console logs
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog(args.join(' '), 'info');
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog(args.join(' '), 'error');
+        };
+
+        function addLog(message, type = 'info') {
+            const line = document.createElement('div');
+            line.className = `log-line ${type}`;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleOutput.appendChild(line);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        // Check bundle status
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const bundleStatus = document.getElementById('bundle-status');
+                const windowCheck = document.getElementById('window-check');
+
+                if (window.LucideIcons) {
+                    bundleStatus.innerHTML = '<span class="success">✓ Bundle loaded successfully</span>';
+                    windowCheck.innerHTML = '<span class="success">✓ window.LucideIcons is available</span>';
+                    
+                    // Try to initialize
+                    console.log('[Test] Initializing icons');
+                    window.LucideIcons.createIcons({
+                        icons: window.LucideIcons.icons
+                    });
+                } else {
+                    bundleStatus.innerHTML = '<span class="error">✗ Bundle failed to load</span>';
+                    windowCheck.innerHTML = '<span class="error">✗ window.LucideIcons is NOT available</span>';
+                }
+            }, 100);
+        });
+
+        function manualReinit() {
+            console.log('[Test] Manual re-initialization triggered');
+            if (window.LucideIcons) {
+                window.LucideIcons.createIcons({
+                    icons: window.LucideIcons.icons
+                });
+            } else {
+                console.error('[Test] window.LucideIcons not available');
+            }
+        }
+    </script>
+</body>
+</html>

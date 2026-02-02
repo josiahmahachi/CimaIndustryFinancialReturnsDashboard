@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <title>blazor-wasm-ui</title>
     <base href="/" />
-    <!-- Tailwind CSS (includes all application styles) -->
+    <!-- Tailwind CSS (includes all application styles and Lucide icons) -->
     <link href="css/tailwind.css" rel="stylesheet" />
     
     <!-- If you add any scoped CSS files, uncomment the following to load them
@@ -20,7 +20,38 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+
+    <!-- Load Lucide icons bundle (all icons bundled for offline use) -->
+    <script src="js/lucide.bundle.js"></script>
+    <!-- Load Blazor framework -->
     <script src="_framework/blazor.webassembly.js"></script>
+    <!-- Re-initialize icons after Blazor finishes rendering -->
+    <script>
+        // Hook into Blazor's lifecycle for icon re-initialization
+        let blazorInitialized = false;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.LucideIcons && !blazorInitialized) {
+                    console.log('[Index] Triggering initial Lucide initialization');
+                    window.LucideIcons.createIcons({
+                        icons: window.LucideIcons.icons
+                    });
+                    blazorInitialized = true;
+                }
+            }, 500);
+        });
+
+        // Re-initialize when page becomes visible (tab switch, etc.)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && window.LucideIcons) {
+                console.log('[Index] Re-initializing icons on visibility change');
+                window.LucideIcons.createIcons({
+                    icons: window.LucideIcons.icons
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

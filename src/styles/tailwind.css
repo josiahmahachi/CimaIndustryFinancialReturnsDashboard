@@ -57,6 +57,53 @@
 }
 
 @layer components {
+  /* Lucide Icon SVG Styling */
+  [data-lucide] {
+    @apply inline-block align-middle;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  [data-lucide] svg {
+    stroke: currentColor;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+  }
+
+  /* Size variants via data-size attribute - pixel-based overrides */
+  [data-lucide][data-size="xs"] svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  [data-lucide][data-size="sm"] svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  [data-lucide][data-size="base"] svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  [data-lucide][data-size="lg"] svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  [data-lucide][data-size="xl"] svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  [data-lucide][data-size="2xl"] svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+
   /* Main Layout Structure */
   .app-container {
     @apply flex w-full h-screen bg-neutral-50;

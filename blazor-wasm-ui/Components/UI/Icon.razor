@@ -1,0 +1,86 @@
+@using Microsoft.AspNetCore.Components
+
+<i data-lucide="@GetLucideIconName()" data-size="@Size" class="@GetIconClass()"></i>
+
+@code {
+    /// <summary>
+    /// The name of the icon to render (maps to Lucide icons)
+    /// </summary>
+    [Parameter]
+    public string Name { get; set; } = "";
+
+    /// <summary>
+    /// Size of the icon - uses text-{size} from Tailwind
+    /// Options: xs (12px), sm (14px), base (16px), lg (18px), xl (20px), 2xl (24px)
+    /// </summary>
+    [Parameter]
+    public string Size { get; set; } = "xs";
+
+    /// <summary>
+    /// Additional CSS classes to apply
+    /// </summary>
+    [Parameter]
+    public string Class { get; set; } = "";
+
+    /// <summary>
+    /// Whether to include margin-right (for use in buttons/menus)
+    /// </summary>
+    [Parameter]
+    public bool WithMargin { get; set; } = false;
+
+    /// <summary>
+    /// Convert icon name to kebab-case Lucide icon name
+    /// </summary>
+    private string GetLucideIconName()
+    {
+        return Name switch
+        {
+            "Home" => "home",
+            "FileText" => "file-text",
+            "Send" => "send",
+            "ClipboardList" => "clipboard-list",
+            "Users" => "users",
+            "Settings" => "settings",
+            "Book" => "book",
+            "LifeBuoy" => "life-buoy",
+            "Building2" => "building-2",
+            "ChevronLeft" => "chevron-left",
+            "ChevronRight" => "chevron-right",
+            "Menu" => "menu",
+            "X" => "x",
+            "Eye" => "eye",
+            "EyeOff" => "eye-off",
+            "AlertTriangle" => "alert-triangle",
+            "CheckCircle" => "check-circle",
+            "Clock" => "clock",
+            "Download" => "download",
+            "Edit" => "edit",
+            "Trash2" => "trash-2",
+            "Plus" => "plus",
+            "Search" => "search",
+            "Filter" => "filter",
+            _ => "circle" // Default fallback icon
+        };
+    }
+
+    /// <summary>
+    /// Get CSS classes for the icon element
+    /// </summary>
+    private string GetIconClass()
+    {
+        var sizeClass = Size switch
+        {
+            "xs" => "text-xs",
+            "sm" => "text-sm",
+            "base" => "text-base",
+            "lg" => "text-lg",
+            "xl" => "text-xl",
+            "2xl" => "text-2xl",
+            _ => "text-base"
+        };
+
+        var marginClass = WithMargin ? "mr-3" : "";
+        
+        return $"{sizeClass} {marginClass} {Class}".Trim();
+    }
+}
