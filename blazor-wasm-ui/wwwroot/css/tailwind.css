@@ -85,6 +85,7 @@
 /* Light theme semantic tokens */
 
 :root {
+  --font-size: 16px;
   --background: var(--color-neutral-50);
   --foreground: var(--color-neutral-900);
   --card: #ffffff;
@@ -697,6 +698,10 @@ html, body {
   padding: 0;
   height: 100%;
   width: 100%;
+}
+
+html {
+  font-size: 14px;
 }
 
 body {
@@ -2613,6 +2618,11 @@ footer {
 
   .md\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .md\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 }
 
